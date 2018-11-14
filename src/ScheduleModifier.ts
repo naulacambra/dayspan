@@ -1,18 +1,15 @@
-
-import { Functions as fn } from './Functions';
-import { Identifier, IdentifierInput } from './Identifier';
-import { Day } from './Day';
-import { Time } from './Time';
-import { DaySpan } from './DaySpan';
-import { Iterator, IteratorAction } from './Iterator';
-
+import { Day } from './Day'
+import { DaySpan } from './DaySpan'
+import { Functions as fn } from './Functions'
+import { Identifier, IdentifierInput } from './Identifier'
+import { Iterator, IteratorAction } from './Iterator'
+import { Time } from './Time'
 
 /**
  * A map of values in the [[ScheduleModifier]] keyed by the descriptions of the
  * identifiers.
  */
-export interface ScheduleModifierDescription<T>
-{
+export interface ScheduleModifierDescription<T> {
   [description: string]: T
 }
 
@@ -20,9 +17,8 @@ export interface ScheduleModifierDescription<T>
  * An object which carries the span taken from an identifier and the value
  * mapped to it in a [[ScheduleModifier]].
  */
-export interface ScheduleModifierSpan<T>
-{
-  span: DaySpan,
+export interface ScheduleModifierSpan<T> {
+  span: DaySpan
   value: T
 }
 
@@ -32,45 +28,38 @@ export interface ScheduleModifierSpan<T>
  *
  * @typeparam T The type of data that modifies the schedule.
  */
-export class ScheduleModifier<T>
-{
-
+export class ScheduleModifier<T> {
   /**
    * The map of values mapped by their [[Identifier]]s.
    */
-  public map: { [id: string]: T };
-
+  public map: { [id: string]: T }
 
   /**
    * Creates a new schedule modifier.
    */
-  public constructor()
-  {
-    this.map = {};
+  public constructor() {
+    this.map = {}
   }
 
   /**
    * Clears the modifier of all modifications.
    */
-  public clear(): this
-  {
-    this.map = {};
+  public clear(): this {
+    this.map = {}
 
-    return this;
+    return this
   }
 
   /**
    * Returns `true` if this modifier lacks any modifications, otherwise `false`.
    */
-  public isEmpty(): boolean
-  {
+  public isEmpty(): boolean {
     // @ts-ignore
-    for (let id in this.map)
-    {
-      return !id;
+    for (const id of this.map) {
+      return !id
     }
 
-    return true;
+    return true
   }
 
   /**
@@ -83,16 +72,17 @@ export class ScheduleModifier<T>
    * @param lookAtTime If the specific time of the given day should be looked at.
    * @returns The most specific value for the given day, or `otherwise`.
    */
-  public get(day: Day, otherwise: T, lookAtTime: boolean = true): T
-  {
-    let map = this.map;
+  public get(day: Day, otherwise: T, lookAtTime = true): T {
+    const map = this.map
 
-    return (lookAtTime && map[ day.timeIdentifier ]) ||
-      map[ day.dayIdentifier ] ||
-      map[ day.monthIdentifier ] ||
-      map[ day.weekIdentifier ] ||
-      map[ day.quarterIdentifier ] ||
-      otherwise;
+    return (
+      (lookAtTime && map[day.timeIdentifier]) ||
+      map[day.dayIdentifier] ||
+      map[day.monthIdentifier] ||
+      map[day.weekIdentifier] ||
+      map[day.quarterIdentifier] ||
+      otherwise
+    )
   }
 
   /**
@@ -103,18 +93,17 @@ export class ScheduleModifier<T>
    * @param lookAtTime If the specific time of the given day should be looked at.
    * @returns The most specific identifier for the given day, otherwise `null`.
    */
-  public getIdentifier(day: Day, lookAtTime: boolean = true): Identifier
-  {
-    let map = this.map;
+  public getIdentifier(day: Day, lookAtTime = true): Identifier {
+    const map = this.map
 
-    if (lookAtTime && fn.isDefined( map[ day.timeIdentifier ] )) return Identifier.Time;
-    if (fn.isDefined( map[ day.dayIdentifier ] )) return Identifier.Day;
-    if (fn.isDefined( map[ day.monthIdentifier ] )) return Identifier.Month;
-    if (fn.isDefined( map[ day.weekIdentifier ] )) return Identifier.Week;
-    if (fn.isDefined( map[ day.quarterIdentifier ] )) return Identifier.Quarter;
-    if (fn.isDefined( map[ day.year ] )) return Identifier.Year;
+    if (lookAtTime && fn.isDefined(map[day.timeIdentifier])) return Identifier.Time
+    if (fn.isDefined(map[day.dayIdentifier])) return Identifier.Day
+    if (fn.isDefined(map[day.monthIdentifier])) return Identifier.Month
+    if (fn.isDefined(map[day.weekIdentifier])) return Identifier.Week
+    if (fn.isDefined(map[day.quarterIdentifier])) return Identifier.Quarter
+    if (fn.isDefined(map[day.year])) return Identifier.Year
 
-    return null;
+    return null
   }
 
   /**
@@ -125,18 +114,17 @@ export class ScheduleModifier<T>
    * @param day The day to get the values for.
    * @returns An array of values (modifications) for the given day.
    */
-  public getAll(day: Day): T[]
-  {
-    let map = this.map;
-    let all: T[] = [];
+  public getAll(day: Day): T[] {
+    const map = this.map
+    const all: T[] = []
 
-    if (map[ day.timeIdentifier ]) all.push( map[ day.timeIdentifier ] );
-    if (map[ day.dayIdentifier ]) all.push( map[ day.dayIdentifier ] );
-    if (map[ day.monthIdentifier ]) all.push( map[ day.monthIdentifier ] );
-    if (map[ day.weekIdentifier ]) all.push( map[ day.weekIdentifier ] );
-    if (map[ day.quarterIdentifier ]) all.push( map[ day.quarterIdentifier ] );
+    if (map[day.timeIdentifier]) all.push(map[day.timeIdentifier])
+    if (map[day.dayIdentifier]) all.push(map[day.dayIdentifier])
+    if (map[day.monthIdentifier]) all.push(map[day.monthIdentifier])
+    if (map[day.weekIdentifier]) all.push(map[day.weekIdentifier])
+    if (map[day.quarterIdentifier]) all.push(map[day.quarterIdentifier])
 
-    return all;
+    return all
   }
 
   /**
@@ -147,16 +135,15 @@ export class ScheduleModifier<T>
    * @param to The day to move the value to.
    * @param toType The identifier type to move the value to.
    */
-  public move(from: Day, fromType: Identifier, to: Day, toType: Identifier): this
-  {
-    let fromIdentifier = fromType.get( from );
-    let toIdentifier = toType.get( to );
+  public move(from: Day, fromType: Identifier, to: Day, toType: Identifier): this {
+    const fromIdentifier = fromType.get(from)
+    const toIdentifier = toType.get(to)
 
-    this.map[ toIdentifier ] = this.map[ fromIdentifier ];
+    this.map[toIdentifier] = this.map[fromIdentifier]
 
-    delete this.map[ fromIdentifier ];
+    delete this.map[fromIdentifier]
 
-    return this;
+    return this
   }
 
   /**
@@ -167,42 +154,36 @@ export class ScheduleModifier<T>
    * @param toTime The time to move to.
    * @returns The number of modifiers moved.
    */
-  public moveTime(fromTime: Time, toTime: Time): number
-  {
-    let type: Identifier = Identifier.Time;
-    let moveIds: IdentifierInput[] = [];
+  public moveTime(fromTime: Time, toTime: Time): number {
+    const type: Identifier = Identifier.Time
+    const moveIds: IdentifierInput[] = []
 
-    this.iterate().iterate(([id, value]) =>
-    {
-      if (type.is( id ))
-      {
-        let start: Day = type.start( id );
+    this.iterate().iterate(([id, value]) => {
+      if (type.is(id)) {
+        const start: Day = type.start(id)
 
-        if (start.sameTime( fromTime ))
-        {
-          moveIds.push( id );
+        if (start.sameTime(fromTime)) {
+          moveIds.push(id)
         }
       }
-    });
+    })
 
-    let moved: number = 0;
+    let moved = 0
 
-    for (let id of moveIds)
-    {
-      let value: T = this.map[ id ];
-      let start: Day = type.start( id );
-      let newStart: Day = start.withTime( toTime );
-      let newId: IdentifierInput = type.get( newStart );
+    for (const id of moveIds) {
+      const value: T = this.map[id]
+      const start: Day = type.start(id)
+      const newStart: Day = start.withTime(toTime)
+      const newId: IdentifierInput = type.get(newStart)
 
-      if (!this.map[ newId ])
-      {
-        this.map[ newId ] = value;
-        delete this.map[ id ];
-        moved++;
+      if (!this.map[newId]) {
+        this.map[newId] = value
+        delete this.map[id]
+        moved++
       }
     }
 
-    return moved;
+    return moved
   }
 
   /**
@@ -211,26 +192,22 @@ export class ScheduleModifier<T>
    * @param time The time to remove.
    * @returns The number of modifiers removed.
    */
-  public removeTime(time: Time): number
-  {
-    let type: Identifier = Identifier.Time;
-    let removed: number = 0;
+  public removeTime(time: Time): number {
+    const type: Identifier = Identifier.Time
+    let removed = 0
 
-    this.iterate().iterate(([id,], iterator) =>
-    {
-      if (type.is( id ))
-      {
-        let start: Day = type.start( id );
+    this.iterate().iterate(([id], iterator) => {
+      if (type.is(id)) {
+        const start: Day = type.start(id)
 
-        if (start.sameTime( time ))
-        {
-          iterator.remove();
-          removed++;
+        if (start.sameTime(time)) {
+          iterator.remove()
+          removed++
         }
       }
-    });
+    })
 
-    return removed;
+    return removed
   }
 
   /**
@@ -241,11 +218,10 @@ export class ScheduleModifier<T>
    * @param value The value/modification to set.
    * @param type The identifier type.
    */
-  public set(day: Day, value: T, type: Identifier): this
-  {
-    this.map[ type.get( day ) ] = value;
+  public set(day: Day, value: T, type: Identifier): this {
+    this.map[type.get(day)] = value
 
-    return this;
+    return this
   }
 
   /**
@@ -255,11 +231,10 @@ export class ScheduleModifier<T>
    * @param day The day to take an identifier from.
    * @param type The identifier type.
    */
-  public unset(day: Day, type: Identifier): this
-  {
-    delete this.map[ type.get( day ) ];
+  public unset(day: Day, type: Identifier): this {
+    delete this.map[type.get(day)]
 
-    return this;
+    return this
   }
 
   /**
@@ -267,28 +242,24 @@ export class ScheduleModifier<T>
    *
    * @returns A new instance of an [[Iterator]].
    */
-  public iterate(): Iterator<[IdentifierInput, T]>
-  {
-    return new Iterator<[IdentifierInput, T]>(iterator =>
-    {
-      let map = this.map;
+  public iterate(): Iterator<[IdentifierInput, T]> {
+    return new Iterator<[IdentifierInput, T]>(iterator => {
+      const map = this.map
 
-      for (let rawId in map)
-      {
-        let asNumber: number = parseInt( rawId );
-        let validAsNumber: boolean = asNumber + '' === rawId;
-        let id: IdentifierInput = validAsNumber ? asNumber : rawId;
+      for (const rawId of Object.keys(map)) {
+        const asNumber: number = parseInt(rawId, 10)
+        const validAsNumber: boolean = asNumber + '' === rawId
+        const id: IdentifierInput = validAsNumber ? asNumber : rawId
 
-        switch (iterator.act([id, map[ rawId ]]))
-        {
+        switch (iterator.act([id, map[rawId]])) {
           case IteratorAction.Stop:
-            return;
+            return
           case IteratorAction.Remove:
-            delete map[ rawId ];
-            break;
+            delete map[rawId]
+            break
         }
       }
-    });
+    })
   }
 
   /**
@@ -299,22 +270,15 @@ export class ScheduleModifier<T>
    * @param prefix The identifier
    * @returns A new instance of an [[Iterator]].
    */
-  public query(query: IdentifierInput): Iterator<[IdentifierInput, T]>
-  {
-    return this.iterate()
-      .filter(([id, value]) => Identifier.contains( query, id ));
-    ;
+  public query(query: IdentifierInput): Iterator<[IdentifierInput, T]> {
+    return this.iterate().filter(([id, value]) => Identifier.contains(query, id))
   }
 
   /**
    * Returns all identifiers stored in this modifier.
    */
-  public identifiers(filter?: (value: T, id: IdentifierInput) => boolean): Iterator<IdentifierInput>
-  {
-    return this.iterate()
-      .filter(([id, value]) => !filter || filter( value, id ))
-      .map<IdentifierInput>(([id, ]) => id)
-    ;
+  public identifiers(filter?: (value: T, id: IdentifierInput) => boolean): Iterator<IdentifierInput> {
+    return this.iterate().filter(([id, value]) => !filter || filter(value, id)).map<IdentifierInput>(([id]) => id)
   }
 
   /**
@@ -326,21 +290,16 @@ export class ScheduleModifier<T>
    * @returns An array of spans calculated from the identifiers with the
    *    associated values/modifications.
    */
-  public spans(endInclusive: boolean = false): Iterator<ScheduleModifierSpan<T>>
-  {
-    return this.iterate()
-      .map(([id, value]) =>
-      {
-        let type: Identifier = Identifier.find(id);
+  public spans(endInclusive = false): Iterator<ScheduleModifierSpan<T>> {
+    return this.iterate().map(([id, value]) => {
+      const type: Identifier = Identifier.find(id)
 
-        if (type)
-        {
-          let span = type.span( id, endInclusive );
+      if (type) {
+        const span = type.span(id, endInclusive)
 
-          return { span, value };
-        }
-      })
-    ;
+        return { span, value }
+      }
+    })
   }
 
   /**
@@ -349,19 +308,14 @@ export class ScheduleModifier<T>
    * @param short If the description should use shorter language or longer.
    * @returns The built list of descriptions.
    */
-  public describe(short: boolean = false): Iterator<string>
-  {
-    return this.iterate()
-      .map<string>( ([id, ]) =>
-      {
-        let type: Identifier = Identifier.find( id );
+  public describe(short = false): Iterator<string> {
+    return this.iterate().map<string>(([id]) => {
+      const type: Identifier = Identifier.find(id)
 
-        if (type)
-        {
-          return type.describe( id, short );
-        }
-      })
-    ;
+      if (type) {
+        return type.describe(id, short)
+      }
+    })
   }
 
   /**
@@ -371,22 +325,18 @@ export class ScheduleModifier<T>
    * @param short If the description should use shorter language or longer.
    * @returns The built map of description to values/modifications.
    */
-  public describeMap(short: boolean = false): ScheduleModifierDescription<T>
-  {
-    let map = this.map;
-    let out: ScheduleModifierDescription<T> = {};
+  public describeMap(short = false): ScheduleModifierDescription<T> {
+    const map = this.map
+    const out: ScheduleModifierDescription<T> = {}
 
-    for (let id in map)
-    {
-      let type: Identifier = Identifier.find(id);
+    for (const id of Object.keys(map)) {
+      const type: Identifier = Identifier.find(id)
 
-      if (type)
-      {
-        out[ type.describe( id, short ) ] = map[ id ];
+      if (type) {
+        out[type.describe(id, short)] = map[id]
       }
     }
 
-    return out;
+    return out
   }
-
 }

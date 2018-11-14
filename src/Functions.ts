@@ -1,22 +1,17 @@
-
-
 /**
  * The class which contains commonly used functions by the library. These
  * functions and variables exist in a class so they may be overridden if
  * desired.
  */
-export class Functions
-{
-
+export class Functions {
   /**
    * Determines whether the given input is an array.
    *
    * @param input The variable to test.
    * @returns `true` if the variable is an array, otherwise `false`.
    */
-  public static isArray(input: any): boolean
-  {
-    return input instanceof Array;
+  public static isArray(input: any): boolean {
+    return input instanceof Array
   }
 
   /**
@@ -28,20 +23,17 @@ export class Functions
    * @param y The second array to test.
    * @returns `true` if they have the same exact values, otherwise `false`.
    */
-  public static isArrayEquals(x: any[], y: any[]): boolean
-  {
-    if (x === y) return true;
-    if (x.length !== y.length) return false;
+  public static isArrayEquals(x: any[], y: any[]): boolean {
+    if (x === y) return true
+    if (x.length !== y.length) return false
 
-    for (let i = 0; i < x.length; i++)
-    {
-      if (x[ i ] !== y[ i ])
-      {
-        return false;
+    for (let i = 0; i < x.length; i++) {
+      if (x[i] !== y[i]) {
+        return false
       }
     }
 
-    return true;
+    return true
   }
 
   /**
@@ -50,9 +42,8 @@ export class Functions
    * @param input The variable to test.
    * @returns `true` if the variable is a string, otherwise `false`.
    */
-  public static isString(input: any): boolean
-  {
-    return typeof(input) === 'string';
+  public static isString(input: any): boolean {
+    return typeof input === 'string'
   }
 
   /**
@@ -62,9 +53,8 @@ export class Functions
    * @param input The variable to test.
    * @returns `true` if the variable is a finite number, otherwise `false`.
    */
-  public static isNumber(input: any): boolean
-  {
-    return isFinite(input) && typeof input === 'number';
+  public static isNumber(input: any): boolean {
+    return isFinite(input) && typeof input === 'number'
   }
 
   /**
@@ -73,9 +63,8 @@ export class Functions
    * @param input The variable to test.
    * @returns `true` if the variable is a plain object, otherwise `false`.
    */
-  public static isObject(input: any): boolean
-  {
-    return input !== null && !this.isArray(input) && typeof(input) === 'object';
+  public static isObject(input: any): boolean {
+    return input !== null && !this.isArray(input) && typeof input === 'object'
   }
 
   /**
@@ -84,9 +73,8 @@ export class Functions
    * @param input The variable to test.
    * @return `true` if the variable is defined, otherwise `false`.
    */
-  public static isDefined(input: any): boolean
-  {
-    return typeof(input) !== 'undefined';
+  public static isDefined(input: any): boolean {
+    return typeof input !== 'undefined'
   }
 
   /**
@@ -95,9 +83,8 @@ export class Functions
    * @param input The variable to test.
    * @return `true` if the variable is defined and not null, otherwise `false`.
    */
-  public static isValue(input: any): boolean
-  {
-    return input !== null && typeof(input) !== 'undefined';
+  public static isValue(input: any): boolean {
+    return input !== null && typeof input !== 'undefined'
   }
 
   /**
@@ -118,9 +105,8 @@ export class Functions
    * @returns `true` if the variable appears to be a [[FrequencyValueEvery]],
    *    otherwise false.
    */
-  public static isFrequencyValueEvery(input: any): boolean
-  {
-    return this.isObject( input ) && this.isNumber( input.every );
+  public static isFrequencyValueEvery(input: any): boolean {
+    return this.isObject(input) && this.isNumber(input.every)
   }
 
   /**
@@ -138,9 +124,8 @@ export class Functions
    * @returns `true` if the variable appears to be a [[FrequencyValueOneOf]],
    *    otherwise false.
    */
-  public static isFrequencyValueOneOf(input: any): boolean
-  {
-    return this.isArray( input ) && input.length > 0;
+  public static isFrequencyValueOneOf(input: any): boolean {
+    return this.isArray(input) && input.length > 0
   }
 
   /**
@@ -158,9 +143,8 @@ export class Functions
    * @returns The first defined argument.
    * @see [[Functions.isDefined]]
    */
-  public static coalesce(a: any, b: any, c?: any): any
-  {
-    return this.isDefined( a ) ? a : (this.isDefined( b ) ? b : c);
+  public static coalesce(a: any, b: any, c?: any): any {
+    return this.isDefined(a) ? a : this.isDefined(b) ? b : c
   }
 
   /**
@@ -170,14 +154,12 @@ export class Functions
    * @param from The object to copy value references from.
    * @returns The reference to `target`.
    */
-  public static extend(target: any, from: any): any
-  {
-    for (let prop in from)
-    {
-      target[ prop ] = from[ prop ];
+  public static extend(target: any, from: any): any {
+    for (const prop in from) {
+      target[prop] = from[prop]
     }
 
-    return target;
+    return target
   }
 
   /**
@@ -196,14 +178,12 @@ export class Functions
    * @param before If the padding should go before the string to pad.
    * @returns The padded string if any padding needed be added.
    */
-  public static pad(x: string, length: number, padding: string, before: boolean): string
-  {
-    while (x.length < length)
-    {
-      before ? x = padding + x : x = x + padding;
+  public static pad(x: string, length: number, padding: string, before: boolean): string {
+    while (x.length < length) {
+      before ? (x = padding + x) : (x = x + padding)
     }
 
-    return x;
+    return x
   }
 
   /**
@@ -223,9 +203,7 @@ export class Functions
    * @param first The number of digits to return from the start of the string.
    * @returns A padded number.
    */
-  public static padNumber(x: number, length: number, first: number = length)
-  {
-    return this.pad(x + '', length, '0', true).substring( 0, first );
+  public static padNumber(x: number, length: number, first: number = length) {
+    return this.pad(x + '', length, '0', true).substring(0, first)
   }
-
 }

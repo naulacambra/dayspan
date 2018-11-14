@@ -1,9 +1,7 @@
-
 /**
  * An operation that can be performed on a single number.
  */
-export enum Op
-{
+export enum Op {
   /**
    * The number is returned unmodified.
    */
@@ -40,9 +38,8 @@ export enum Op
    * The number is rounded down when positive and up when negative. This is
    * effectively floor the absolute value where the result preserves the sign.
    */
-  DOWN
+  DOWN,
 }
-
 
 /**
  * Performs the requested operation on the given number, optionally taking
@@ -53,32 +50,28 @@ export enum Op
  * @param absolute If the number should be positive before the operation.
  * @return The operated result, or the original value if its not a valid number.
  */
-export function operate(value: number, op: Op, absolute: boolean = false)
-{
-  if (isFinite(value))
-  {
-    if (absolute)
-    {
-      value = Math.abs( value );
+export function operate(value: number, op: Op, absolute = false) {
+  if (isFinite(value)) {
+    if (absolute) {
+      value = Math.abs(value)
     }
 
-    switch (op)
-    {
-    case Op.NONE:
-      return value;
-    case Op.FLOOR:
-      return Math.floor( value );
-    case Op.CEIL:
-      return Math.ceil( value );
-    case Op.ROUND:
-      return Math.round( value );
-    case Op.TRUNCATE:
-    case Op.DOWN:
-      return value < 0 ? Math.ceil( value ) : Math.floor( value );
-    case Op.UP:
-      return value < 0 ? Math.floor( value ) : Math.ceil( value );
+    switch (op) {
+      case Op.NONE:
+        return value
+      case Op.FLOOR:
+        return Math.floor(value)
+      case Op.CEIL:
+        return Math.ceil(value)
+      case Op.ROUND:
+        return Math.round(value)
+      case Op.TRUNCATE:
+      case Op.DOWN:
+        return value < 0 ? Math.ceil(value) : Math.floor(value)
+      case Op.UP:
+        return value < 0 ? Math.floor(value) : Math.ceil(value)
     }
   }
 
-  return value;
+  return value
 }

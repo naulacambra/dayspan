@@ -1,7 +1,5 @@
-
-import { CalendarEvent } from './CalendarEvent';
-import { Event } from './Event';
-
+import { CalendarEvent } from './CalendarEvent'
+import { Event } from './Event'
 
 /**
  * A function which takes two [[CalendarEvent]]s and returns a number which
@@ -14,7 +12,7 @@ import { Event } from './Event';
  *    returned, when the second event should go before the first event a
  *    positive number is returned.
  */
-export type SortEvent<T, M> = (a: CalendarEvent<T, M>, b: CalendarEvent<T, M>) => number;
+export type SortEvent<T, M> = (a: CalendarEvent<T, M>, b: CalendarEvent<T, M>) => number
 
 /**
  * A class with [[SortEvent]] functions and functions which accept other
@@ -25,9 +23,7 @@ export type SortEvent<T, M> = (a: CalendarEvent<T, M>, b: CalendarEvent<T, M>) =
  * Sorts.List([Sorts.FullDay, Sorts.Desc(Sorts.Start)]);
  * ```
  */
-export class Sorts
-{
-
+export class Sorts {
   /**
    * Sorts the two events by their start time - the earliest event being first
    * in order.
@@ -37,9 +33,8 @@ export class Sorts
    * @returns The difference in time between the start of `a` and `b`.
    * @see [[CalendarEvent.time]]
    */
-  public static Start<T, M>(a: CalendarEvent<T, M>, b: CalendarEvent<T, M>): number
-  {
-    return a.time.start.time - b.time.start.time;
+  public static Start<T, M>(a: CalendarEvent<T, M>, b: CalendarEvent<T, M>): number {
+    return a.time.start.time - b.time.start.time
   }
 
   /**
@@ -51,9 +46,8 @@ export class Sorts
    * @returns The difference in time between the end of `a` and `b`.
    * @see [[CalendarEvent.time]]
    */
-  public static End<T, M>(a: CalendarEvent<T, M>, b: CalendarEvent<T, M>): number
-  {
-    return a.time.end.time - b.time.end.time;
+  public static End<T, M>(a: CalendarEvent<T, M>, b: CalendarEvent<T, M>): number {
+    return a.time.end.time - b.time.end.time
   }
 
   /**
@@ -66,12 +60,11 @@ export class Sorts
    *    `b` is full day.
    * @see [[CalendarEvent.fullDay]]
    */
-  public static FullDay<T, M>(a: CalendarEvent<T, M>, b: CalendarEvent<T, M>): number
-  {
-    let af: number = a.fullDay ? 0 : 1;
-    let bf: number = b.fullDay ? 0 : 1;
+  public static FullDay<T, M>(a: CalendarEvent<T, M>, b: CalendarEvent<T, M>): number {
+    const af: number = a.fullDay ? 0 : 1
+    const bf: number = b.fullDay ? 0 : 1
 
-    return af - bf;
+    return af - bf
   }
 
   /**
@@ -85,9 +78,8 @@ export class Sorts
    * @see [[CalendarEvent.time]]
    * @see [[DaySpan.millis]]
    */
-  public static Duration<T, M>(a: CalendarEvent<T, M>, b: CalendarEvent<T, M>): number
-  {
-    return a.time.millis() - b.time.millis();
+  public static Duration<T, M>(a: CalendarEvent<T, M>, b: CalendarEvent<T, M>): number {
+    return a.time.millis() - b.time.millis()
   }
 
   /**
@@ -97,12 +89,10 @@ export class Sorts
    * @param sorter The sorter to reverse.
    * @returns A new sorter which reverses the one passed in.
    */
-  public static Desc<T, M>(sorter: SortEvent<T, M>): SortEvent<T, M>
-  {
-    return (a, b) =>
-    {
-      return sorter( b, a );
-    };
+  public static Desc<T, M>(sorter: SortEvent<T, M>): SortEvent<T, M> {
+    return (a, b) => {
+      return sorter(b, a)
+    }
   }
 
   /**
@@ -113,15 +103,13 @@ export class Sorts
    * @param getString A function which returns a string from the event.
    * @returns A sorter which sorts strings alphabetically.
    */
-  public static Alphabetical<T, M>(getString: (event: Event<T, M>) => string): SortEvent<T, M>
-  {
-    return (a, b) =>
-    {
-      let as: string = getString( a.event ) || '';
-      let bs: string = getString( b.event ) || '';
+  public static Alphabetical<T, M>(getString: (event: Event<T, M>) => string): SortEvent<T, M> {
+    return (a, b) => {
+      const as: string = getString(a.event) || ''
+      const bs: string = getString(b.event) || ''
 
-      return as.localeCompare( bs );
-    };
+      return as.localeCompare(bs)
+    }
   }
 
   /**
@@ -132,15 +120,13 @@ export class Sorts
    * @param getOrder A function which returns a number from the event.
    * @returns A sorter which sorts events based on a number in ascending order.
    */
-  public static Ordered<T, M>(getOrder: (event: Event<T, M>) => number): SortEvent<T, M>
-  {
-    return (a, b) =>
-    {
-      let ao: number = getOrder( a.event );
-      let bo: number = getOrder( b.event );
+  public static Ordered<T, M>(getOrder: (event: Event<T, M>) => number): SortEvent<T, M> {
+    return (a, b) => {
+      const ao: number = getOrder(a.event)
+      const bo: number = getOrder(b.event)
 
-      return ao - bo;
-    };
+      return ao - bo
+    }
   }
 
   /**
@@ -150,22 +136,17 @@ export class Sorts
    * @param sorters A list of sorting functions to test one at a time.
    * @returns A sorter which sorts based on a list of sorters.
    */
-  public static List<T, M>(sorters: SortEvent<T, M>[]): SortEvent<T, M>
-  {
-    return (a, b) =>
-    {
-      for (let sorter of sorters)
-      {
-        let compare: number = sorter(a, b);
+  public static List<T, M>(sorters: SortEvent<T, M>[]): SortEvent<T, M> {
+    return (a, b) => {
+      for (const sorter of sorters) {
+        const compare: number = sorter(a, b)
 
-        if (compare !== 0)
-        {
-          return compare;
+        if (compare !== 0) {
+          return compare
         }
       }
 
-      return 0;
-    };
+      return 0
+    }
   }
-
 }

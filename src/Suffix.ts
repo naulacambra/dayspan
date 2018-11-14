@@ -1,4 +1,3 @@
-
 /**
  * A class which takes a number and determines the suffix for that number.
  *
@@ -9,43 +8,35 @@
  * Suffix.get( 4, true );     // 4th
  * ```
  */
-export class Suffix
-{
-
+export class Suffix {
   /**
    * The array of suffixes used.
    */
-  public static MAP: string[] = [
-    'th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'
-  ];
+  public static MAP: string[] = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th']
 
   /**
    * An internal cache of [[Suffix._CACHE_SIZE]] suffixes.
    */
-  private static _CACHE: string[];
+  private static _CACHE: string[]
 
   /**
    * The number of values to store in the cache (inclusive).
    */
-  private static _CACHE_SIZE: number = 366;
-
+  private static _CACHE_SIZE = 366
 
   /**
    * The cache of number & suffix pairs.
    */
-  public static get CACHE(): string[]
-  {
-    if (!this._CACHE)
-    {
-      this._CACHE = [];
+  public static get CACHE(): string[] {
+    if (!this._CACHE) {
+      this._CACHE = []
 
-      for (let i = 0; i <= this._CACHE_SIZE; i++)
-      {
-        this._CACHE[ i ] = this.get( i, true );
+      for (let i = 0; i <= this._CACHE_SIZE; i++) {
+        this._CACHE[i] = this.get(i, true)
       }
     }
 
-    return this._CACHE;
+    return this._CACHE
   }
 
   /**
@@ -54,9 +45,8 @@ export class Suffix
    * @param value The number to find the suffix for.
    * @returns The suffix determined.
    */
-  public static determine(value: number): string
-  {
-    return value >= 11 && value <= 13 ? 'th' : this.MAP[ value % this.MAP.length ];
+  public static determine(value: number): string {
+    return value >= 11 && value <= 13 ? 'th' : this.MAP[value % this.MAP.length]
   }
 
   /**
@@ -66,11 +56,9 @@ export class Suffix
    * @param prepend When `true` the value is prepended to the suffix.
    * @returns The suffix or value & suffix pair determined.
    */
-  public static get(value: number, prepend: boolean = false): string
-  {
-    let suffix: string = this.determine(value);
+  public static get(value: number, prepend = false): string {
+    const suffix: string = this.determine(value)
 
-    return prepend ? value + suffix : suffix;
+    return prepend ? value + suffix : suffix
   }
-
 }

@@ -1,10 +1,8 @@
-
-import { Op } from './Operation';
-import { Day } from './Day';
-import { DaySpan } from './DaySpan';
-import { CalendarEvent } from './CalendarEvent';
-import { Iterator } from './Iterator';
-
+import { CalendarEvent } from './CalendarEvent'
+import { Day } from './Day'
+import { DaySpan } from './DaySpan'
+import { Iterator } from './Iterator'
+import { Op } from './Operation'
 
 /**
  * A day in a [[Calendar]] with extra information relative to any selection on
@@ -13,28 +11,26 @@ import { Iterator } from './Iterator';
  * @typeparam T The type of data stored in the [[Event]] class.
  * @typeparam M The type of metadata stored in the schedule.
  */
-export class CalendarDay<T, M> extends Day
-{
-
+export class CalendarDay<T, M> extends Day {
   /**
    * Whether this day is the current day (ex: today).
    */
-  public currentDay: boolean = false;
+  public currentDay = false
 
   /**
    * Whether this day is on the same week as the current day (ex: today).
    */
-  public currentWeek: boolean = false;
+  public currentWeek = false
 
   /**
    * Whether this day is on the same month as the current day (ex: today).
    */
-  public currentMonth: boolean = false;
+  public currentMonth = false
 
   /**
    * Whether this day is on the same year as the current day (ex: today).
    */
-  public currentYear: boolean = false;
+  public currentYear = false
 
   /**
    * How many days away this day is from the current day (ex: today). If this
@@ -42,67 +38,63 @@ export class CalendarDay<T, M> extends Day
    * day it will be the negative number of days away. Otherwise this will be
    * positive meaning this day is after the current day by the given days.
    */
-  public currentOffset: number = 0;
+  public currentOffset = 0
 
   /**
    * Whether this day is part of a selection on the calendar.
    */
-  public selectedDay: boolean = false;
+  public selectedDay = false
 
   /**
    * Whether this day is on the same week that the calendar selection is.
    */
-  public selectedWeek: boolean = false;
+  public selectedWeek = false
 
   /**
    * Whether this day is on the same month that the calendar selection is.
    */
-  public selectedMonth: boolean = false;
+  public selectedMonth = false
 
   /**
    * Whether this day is on the same year that the calendar selection is.
    */
-  public selectedYear: boolean = false;
+  public selectedYear = false
 
   /**
    * Whether this day is in the current calendar or not. Some days are outside
    * the calendar span and used to fill in weeks. Month calendars will fill in
    * days so the list of days in the calendar start on Sunday and end on Saturday.
    */
-  public inCalendar: boolean = false;
+  public inCalendar = false
 
   /**
    * The list of events on this day based on the settings and schedules in the
    * calendar.
    */
-  public events: CalendarEvent<T, M>[] = [];
-
+  public events: CalendarEvent<T, M>[] = []
 
   /**
    * Creates an iterator for the events on this day.
    *
    * @returns The new iterator for the events on this day.
    */
-  public iterateEvents(): Iterator<CalendarEvent<T, M>>
-  {
-    return Iterator.forArray( this.events );
+  public iterateEvents(): Iterator<CalendarEvent<T, M>> {
+    return Iterator.forArray(this.events)
   }
-
 
   /**
    * Updates the current flags on this day given the current day (ex: today).
    *
    * @param current The current day of the calendar.
    */
-  public updateCurrent(current: Day): this
-  {
-    this.currentDay = this.sameDay(current);
-    this.currentWeek = this.sameWeek(current);
-    this.currentMonth = this.sameMonth(current);
-    this.currentYear = this.sameYear(current);
-    this.currentOffset = this.daysBetween(current, Op.DOWN, false);
+  public updateCurrent(current: Day): this {
+    this.currentDay = this.sameDay(current)
+    this.currentWeek = this.sameWeek(current)
+    this.currentMonth = this.sameMonth(current)
+    this.currentYear = this.sameYear(current)
+    this.currentOffset = this.daysBetween(current, Op.DOWN, false)
 
-    return this;
+    return this
   }
 
   /**
@@ -111,25 +103,22 @@ export class CalendarDay<T, M> extends Day
    *
    * @param selected The span of days selected on the calendar.
    */
-  public updateSelected(selected: DaySpan): this
-  {
-    this.selectedDay = selected.matchesDay(this);
-    this.selectedWeek = selected.matchesWeek(this);
-    this.selectedMonth = selected.matchesMonth(this);
-    this.selectedYear = selected.matchesYear(this);
+  public updateSelected(selected: DaySpan): this {
+    this.selectedDay = selected.matchesDay(this)
+    this.selectedWeek = selected.matchesWeek(this)
+    this.selectedMonth = selected.matchesMonth(this)
+    this.selectedYear = selected.matchesYear(this)
 
-    return this;
+    return this
   }
 
   /**
    * Clears the selection flags on this day. This is done when the selection on
    * the calendar is cleared.
    */
-  public clearSelected(): this
-  {
-    this.selectedDay = this.selectedWeek = this.selectedMonth = this.selectedYear = false;
+  public clearSelected(): this {
+    this.selectedDay = this.selectedWeek = this.selectedMonth = this.selectedYear = false
 
-    return this;
+    return this
   }
-
 }

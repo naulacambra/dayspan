@@ -1,8 +1,6 @@
-
-import { Functions as fn } from './Functions';
-import { Day } from './Day';
-import { DaySpan } from './DaySpan';
-
+import { Day } from './Day'
+import { DaySpan } from './DaySpan'
+import { Functions as fn } from './Functions'
 
 /**
  * The type for identifiers. Most of the time an identifier can be stored as a
@@ -11,43 +9,41 @@ import { DaySpan } from './DaySpan';
  * enable very quick comparisons and using strings or numbers allows the
  * identifier to be used as a key to a map.
  */
-export type IdentifierInput = number | string;
+export type IdentifierInput = number | string
 
 /**
  * The possible properties which can be pulled from an identifier.
  */
-export interface IdentifierObject
-{
+export interface IdentifierObject {
   /**
    * The year pulled from an identifier (0-9999).
    */
-  year?: number;
+  year?: number
   /**
    * The quarter of the year pulled from an identifier (1-4)
    */
-  quarter?: number;
+  quarter?: number
   /**
    * The month of the year pulled from an identifier (0-11)
    */
-  month?: number;
+  month?: number
   /**
    * The week of the year pulled from an identifier (1-52)
    */
-  week?: number;
+  week?: number
   /**
    * The day of the month pulled from an identifier (1-31)
    */
-  day?: number;
+  day?: number
   /**
    * The hour of the day pulled from an identifier (0-23)
    */
-  hour?: number;
+  hour?: number
   /**
    * The minute of the hour pulled from an identifier (0-59)
    */
-  minute?: number;
+  minute?: number
 }
-
 
 /**
  * A class for detecting, parsing, and building identifiers to and from days.
@@ -65,163 +61,36 @@ export interface IdentifierObject
  * - `201406151651`: June 15th 2016 at 4:51 pm
  * - `'0525'`: Year 525 of the first age, Elrond and Elros are born
  */
-export abstract class Identifier
-{
-
-  /**
-   * Determines whether the given identifier is this type.
-   *
-   * @param id The identifier to test.
-   * @returns `true` if the identifier is this type, otherwise `false`.
-   */
-  public is(id: IdentifierInput): boolean
-  {
-    return (id + '').length === this.getLength();
-  }
-
-  /**
-   * Returns the identifier of this type for the given day,
-   *
-   * @param day The day to get the identifier of.
-   * @returns The identifier for the day of this type.
-   */
-  abstract get(day: Day): IdentifierInput;
-
-  /**
-   * Converts the given identifier which has passed [[Identifier.is]] to an
-   * object with properties pulled from the identifier.
-   *
-   * @param id The identifier to parse.
-   * @returns The object with properties parsed from the identifer.
-   */
-  abstract object(id: IdentifierInput): IdentifierObject;
-
-  /**
-   * Returns the start of the time span the identifier represents.
-   *
-   * @param id The identifier to convert to a start day.
-   * @returns The start of the time span the identifier represents.
-   */
-  abstract start(id: IdentifierInput): Day;
-
-  /**
-   * Returns the span of time the identifier represents.
-   *
-   * @param id The identifier to convert to a span.
-   * @param endInclusive When `true` the end of the span will be the very last
-   *    millisecond that represents the timespan, otherwise `false` the end
-   *    will be the start of the very next span.
-   * @returns
-   */
-  abstract span(id: IdentifierInput, endInclusive: boolean): DaySpan;
-
-  /**
-   * Determines if the day matches the given identifier.
-   *
-   * @param day The day to test.
-   * @param id The identifier to compare to.
-   * @returns `true` if the day exists in the time span represented by the
-   *    identifier, otherwise `false`.
-   */
-  abstract matches(day: Day, id: IdentifierInput): boolean;
-
-  /**
-   * Describes the given identifier as a human friendly string.
-   *
-   * @param id The identifier to describe.
-   * @param short If the description should use shorter language or longer.
-   * @returns The human friendly string that describes the identifier.
-   */
-  abstract describe(id: IdentifierInput, short: boolean): string;
-
-  /**
-   * The scales for all the different values stored in an identifier.
-   */
-  protected abstract getScales(): number[];
-
-  /**
-   * The length of the identifier of this type in digits.
-   */
-  protected abstract getLength(): number;
-
-  /**
-   * Computes the identifier given values taken from a [[Day]].
-   *
-   * @param values The values to compute.
-   * @returns The computed identifier.
-   */
-  protected compute(...values: number[]): IdentifierInput
-  {
-    const scales: number[] = this.getScales();
-    let total: number = 0;
-
-    for (let i = 0; i < values.length; i++)
-    {
-      total += values[ i ] * scales[ i ];
-    }
-
-    return this.is( total ) ? total : fn.padNumber(total, this.getLength());
-  }
-
-  /**
-   * Decomputes the given identifier and returns values which describe a span
-   * of time.
-   *
-   * @param id The identifier to decompute.
-   * @returns The original values which computed the identifier.
-   */
-  protected decompute(id: IdentifierInput): number[]
-  {
-    const scales: number[] = this.getScales();
-    let total: number = fn.isNumber(id) ? <number>id : parseInt(<string>id);
-    let values: number[] = [];
-
-    for (let i = 0; i < scales.length - 1; i++)
-    {
-      let curr: number = scales[ i + 0 ];
-      let next: number = scales[ i + 1 ];
-      let mod: number = next / curr;
-      let value: number = total % mod;
-
-      values.push( value );
-      total = Math.floor( total / mod );
-    }
-
-    values.push( total );
-
-    return values;
-  }
-
+export abstract class Identifier {
   /**
    * The identifier type for an hour of time on a specific day.
    */
-  public static Time: Identifier = null;
+  public static Time: Identifier = null
 
   /**
    * The identifier type for a specific day.
    */
-  public static Day: Identifier = null;
+  public static Day: Identifier = null
 
   /**
    * The identifier type for a specific week of a year.
    */
-  public static Week: Identifier = null;
+  public static Week: Identifier = null
 
   /**
    * The identifier type for a specific month of a year.
    */
-  public static Month: Identifier = null;
+  public static Month: Identifier = null
 
   /**
    * The identifier type for a specific quarter of a year.
    */
-  public static Quarter: Identifier = null;
+  public static Quarter: Identifier = null
 
   /**
    * The identifier type for a specific year.
    */
-  public static Year: Identifier = null;
-
+  public static Year: Identifier = null
 
   /**
    * Finds which identifier type matches the given identifier, if any.
@@ -229,15 +98,14 @@ export abstract class Identifier
    * @param id The identifier to find the type of.
    * @returns The found identifier type, otherwise `null` if none exists.
    */
-  public static find(id: IdentifierInput): Identifier
-  {
-    if (this.Time.is(id)) return this.Time;
-    if (this.Day.is(id)) return this.Day;
-    if (this.Week.is(id)) return this.Week;
-    if (this.Month.is(id)) return this.Month;
-    if (this.Year.is(id)) return this.Year;
+  public static find(id: IdentifierInput): Identifier {
+    if (this.Time.is(id)) return this.Time
+    if (this.Day.is(id)) return this.Day
+    if (this.Week.is(id)) return this.Week
+    if (this.Month.is(id)) return this.Month
+    if (this.Year.is(id)) return this.Year
 
-    return null;
+    return null
   }
 
   /**
@@ -249,85 +117,185 @@ export abstract class Identifier
    * @returns `true` if `inner` is equal to or contained in `outer`, otherwise
    *    `false`.
    */
-  public static contains(outer: IdentifierInput, inner: IdentifierInput): boolean
-  {
-    let outerString: string = outer + '';
+  public static contains(outer: IdentifierInput, inner: IdentifierInput): boolean {
+    const outerString: string = outer + ''
 
-    return (inner + '').substring( 0, outerString.length ) === outerString;
+    return (inner + '').substring(0, outerString.length) === outerString
   }
 
+  /**
+   * Determines whether the given identifier is this type.
+   *
+   * @param id The identifier to test.
+   * @returns `true` if the identifier is this type, otherwise `false`.
+   */
+  public is(id: IdentifierInput): boolean {
+    return (id + '').length === this.getLength()
+  }
+
+  /**
+   * Returns the identifier of this type for the given day,
+   *
+   * @param day The day to get the identifier of.
+   * @returns The identifier for the day of this type.
+   */
+  abstract get(day: Day): IdentifierInput
+
+  /**
+   * Converts the given identifier which has passed [[Identifier.is]] to an
+   * object with properties pulled from the identifier.
+   *
+   * @param id The identifier to parse.
+   * @returns The object with properties parsed from the identifer.
+   */
+  abstract object(id: IdentifierInput): IdentifierObject
+
+  /**
+   * Returns the start of the time span the identifier represents.
+   *
+   * @param id The identifier to convert to a start day.
+   * @returns The start of the time span the identifier represents.
+   */
+  abstract start(id: IdentifierInput): Day
+
+  /**
+   * Returns the span of time the identifier represents.
+   *
+   * @param id The identifier to convert to a span.
+   * @param endInclusive When `true` the end of the span will be the very last
+   *    millisecond that represents the timespan, otherwise `false` the end
+   *    will be the start of the very next span.
+   * @returns
+   */
+  abstract span(id: IdentifierInput, endInclusive: boolean): DaySpan
+
+  /**
+   * Determines if the day matches the given identifier.
+   *
+   * @param day The day to test.
+   * @param id The identifier to compare to.
+   * @returns `true` if the day exists in the time span represented by the
+   *    identifier, otherwise `false`.
+   */
+  abstract matches(day: Day, id: IdentifierInput): boolean
+
+  /**
+   * Describes the given identifier as a human friendly string.
+   *
+   * @param id The identifier to describe.
+   * @param short If the description should use shorter language or longer.
+   * @returns The human friendly string that describes the identifier.
+   */
+  abstract describe(id: IdentifierInput, short: boolean): string
+
+  /**
+   * The scales for all the different values stored in an identifier.
+   */
+  protected abstract getScales(): number[]
+
+  /**
+   * The length of the identifier of this type in digits.
+   */
+  protected abstract getLength(): number
+
+  /**
+   * Computes the identifier given values taken from a [[Day]].
+   *
+   * @param values The values to compute.
+   * @returns The computed identifier.
+   */
+  protected compute(...values: number[]): IdentifierInput {
+    const scales: number[] = this.getScales()
+    let total = 0
+
+    for (let i = 0; i < values.length; i++) {
+      total += values[i] * scales[i]
+    }
+
+    return this.is(total) ? total : fn.padNumber(total, this.getLength())
+  }
+
+  /**
+   * Decomputes the given identifier and returns values which describe a span
+   * of time.
+   *
+   * @param id The identifier to decompute.
+   * @returns The original values which computed the identifier.
+   */
+  protected decompute(id: IdentifierInput): number[] {
+    const scales: number[] = this.getScales()
+    let total: number = fn.isNumber(id) ? id as number : parseInt(id as string, 10)
+    const values: number[] = []
+
+    for (let i = 0; i < scales.length - 1; i++) {
+      const curr: number = scales[i + 0]
+      const next: number = scales[i + 1]
+      const mod: number = next / curr
+      const value: number = total % mod
+
+      values.push(value)
+      total = Math.floor(total / mod)
+    }
+
+    values.push(total)
+
+    return values
+  }
 }
 
 // YYYYMMddHHmm (12)
-class IdentifierTime extends Identifier
-{
-
-  public static DESCRIBE_FORMAT_LONG: string = 'LLL';
-  public static DESCRIBE_FORMAT_SHORT: string = 'lll';
+class IdentifierTime extends Identifier {
+  public static DESCRIBE_FORMAT_LONG = 'LLL'
+  public static DESCRIBE_FORMAT_SHORT = 'lll'
 
   private static SCALES: number[] = [
-    1           /* minute */,
-    100         /* hour   */,
-    10000       /* day    */,
-    1000000     /* month  */,
-    100000000   /* year   */];
-  private static LENGTH: number = 12;
+    1 /* minute */,
+    100 /* hour   */,
+    10000 /* day    */,
+    1000000 /* month  */,
+    100000000 /* year   */,
+  ]
+  private static LENGTH = 12
 
-  protected getScales(): number[]
-  {
-    return IdentifierTime.SCALES;
+  public get(day: Day): IdentifierInput {
+    return this.compute(day.minute, day.hour, day.dayOfMonth, day.month + 1, day.year)
   }
 
-  protected getLength(): number
-  {
-    return IdentifierTime.LENGTH;
-  }
-
-  public get(day: Day): IdentifierInput
-  {
-    return this.compute(day.minute, day.hour, day.dayOfMonth, day.month + 1, day.year);
-  }
-
-  public object(id: IdentifierInput): IdentifierObject
-  {
-    let values: number[] = this.decompute(id);
+  public object(id: IdentifierInput): IdentifierObject {
+    const values: number[] = this.decompute(id)
 
     return {
-      minute:   values[0],
-      hour:     values[1],
-      day:      values[2],
-      month:    values[3] - 1,
-      year:     values[4]
-    };
+      minute: values[0],
+      hour: values[1],
+      day: values[2],
+      month: values[3] - 1,
+      year: values[4],
+    }
   }
 
-  public start(id: IdentifierInput): Day
-  {
-    let obj: IdentifierObject = this.object(id);
-    let start: Day = Day.build( obj.year, obj.month, obj.day, obj.hour, obj.minute );
+  public start(id: IdentifierInput): Day {
+    const obj: IdentifierObject = this.object(id)
+    const start: Day = Day.build(obj.year, obj.month, obj.day, obj.hour, obj.minute)
 
-    return start;
+    return start
   }
 
-  public span(id: IdentifierInput, endInclusive: boolean = false): DaySpan
-  {
-    let start: Day = this.start( id );
-    let end: Day = start.endOfHour( endInclusive );
+  public span(id: IdentifierInput, endInclusive = false): DaySpan {
+    const start: Day = this.start(id)
+    const end: Day = start.endOfHour(endInclusive)
 
-    return new DaySpan(start, end);
+    return new DaySpan(start, end)
   }
 
-  public describe(id: IdentifierInput, short: boolean = false): string
-  {
-    let start: Day = this.start( id );
-    let format: string = short ? IdentifierTime.DESCRIBE_FORMAT_SHORT : IdentifierTime.DESCRIBE_FORMAT_LONG;
+  public describe(id: IdentifierInput, short = false): string {
+    const start: Day = this.start(id)
+    const format: string = short ? IdentifierTime.DESCRIBE_FORMAT_SHORT : IdentifierTime.DESCRIBE_FORMAT_LONG
 
-    return start.format( format );
+    return start.format(format)
   }
 
-  public matches(day: Day, id: IdentifierInput): boolean
-  {
-    return day.timeIdentifier === id;
+  public matches(day: Day, id: IdentifierInput): boolean {
+    return day.timeIdentifier === id
     /*
     let obj: IdentifierObject = this.object(id);
 
@@ -341,74 +309,60 @@ class IdentifierTime extends Identifier
     */
   }
 
+  protected getScales(): number[] {
+    return IdentifierTime.SCALES
+  }
+
+  protected getLength(): number {
+    return IdentifierTime.LENGTH
+  }
 }
 
 // YYYYMMdd (8)
-class IdentifierDay extends Identifier
-{
+class IdentifierDay extends Identifier {
+  public static DESCRIBE_FORMAT_LONG = 'LL'
+  public static DESCRIBE_FORMAT_SHORT = 'll'
 
-  public static DESCRIBE_FORMAT_LONG: string = 'LL';
-  public static DESCRIBE_FORMAT_SHORT: string = 'll';
+  private static SCALES: number[] = [1 /* day     */, 100 /* month   */, 10000 /* year    */]
+  private static LENGTH = 8
 
-  private static SCALES: number[] = [
-    1           /* day     */,
-    100         /* month   */,
-    10000       /* year    */];
-  private static LENGTH: number = 8;
-
-  protected getScales(): number[]
-  {
-    return IdentifierDay.SCALES;
+  public get(day: Day): IdentifierInput {
+    return this.compute(day.dayOfMonth, day.month + 1, day.year)
   }
 
-  protected getLength(): number
-  {
-    return IdentifierDay.LENGTH;
-  }
-
-  public get(day: Day): IdentifierInput
-  {
-    return this.compute(day.dayOfMonth, day.month + 1, day.year);
-  }
-
-  public object(id: IdentifierInput): IdentifierObject
-  {
-    let values: number[] = this.decompute(id);
+  public object(id: IdentifierInput): IdentifierObject {
+    const values: number[] = this.decompute(id)
 
     return {
-      day:      values[0],
-      month:    values[1] - 1,
-      year:     values[2]
-    };
+      day: values[0],
+      month: values[1] - 1,
+      year: values[2],
+    }
   }
 
-  public start(id: IdentifierInput): Day
-  {
-    let obj: IdentifierObject = this.object(id);
-    let start: Day = Day.build( obj.year, obj.month, obj.day );
+  public start(id: IdentifierInput): Day {
+    const obj: IdentifierObject = this.object(id)
+    const start: Day = Day.build(obj.year, obj.month, obj.day)
 
-    return start;
+    return start
   }
 
-  public span(id: IdentifierInput, endInclusive: boolean = false): DaySpan
-  {
-    let start: Day = this.start( id );
-    let end: Day = start.end( endInclusive );
+  public span(id: IdentifierInput, endInclusive = false): DaySpan {
+    const start: Day = this.start(id)
+    const end: Day = start.end(endInclusive)
 
-    return new DaySpan(start, end);
+    return new DaySpan(start, end)
   }
 
-  public describe(id: IdentifierInput, short: boolean = false): string
-  {
-    let start: Day = this.start( id );
-    let format: string = short ? IdentifierDay.DESCRIBE_FORMAT_SHORT : IdentifierDay.DESCRIBE_FORMAT_LONG;
+  public describe(id: IdentifierInput, short = false): string {
+    const start: Day = this.start(id)
+    const format: string = short ? IdentifierDay.DESCRIBE_FORMAT_SHORT : IdentifierDay.DESCRIBE_FORMAT_LONG
 
-    return start.format( format );
+    return start.format(format)
   }
 
-  public matches(day: Day, id: IdentifierInput): boolean
-  {
-    return day.dayIdentifier === id;
+  public matches(day: Day, id: IdentifierInput): boolean {
+    return day.dayIdentifier === id
     /*
     let obj: IdentifierObject = this.object(id);
 
@@ -420,72 +374,59 @@ class IdentifierDay extends Identifier
     */
   }
 
+  protected getScales(): number[] {
+    return IdentifierDay.SCALES
+  }
+
+  protected getLength(): number {
+    return IdentifierDay.LENGTH
+  }
 }
 
 // YYYY0ww (7)
-class IdentifierWeek extends Identifier
-{
+class IdentifierWeek extends Identifier {
+  public static DESCRIBE_FORMAT_LONG = 'wo [week of] YYYY'
+  public static DESCRIBE_FORMAT_SHORT = 'wo [week of] YYYY'
 
-  public static DESCRIBE_FORMAT_LONG: string = 'wo [week of] YYYY';
-  public static DESCRIBE_FORMAT_SHORT: string = 'wo [week of] YYYY';
+  private static SCALES: number[] = [1 /* week   */, 1000 /* year   */]
+  private static LENGTH = 7
 
-  private static SCALES: number[] = [
-    1           /* week   */,
-    1000        /* year   */];
-  private static LENGTH: number = 7;
-
-  protected getScales(): number[]
-  {
-    return IdentifierWeek.SCALES;
+  public get(day: Day): IdentifierInput {
+    return this.compute(day.week, day.year)
   }
 
-  protected getLength(): number
-  {
-    return IdentifierWeek.LENGTH;
-  }
-
-  public get(day: Day): IdentifierInput
-  {
-    return this.compute(day.week, day.year);
-  }
-
-  public object(id: IdentifierInput): IdentifierObject
-  {
-    let values: number[] = this.decompute(id);
+  public object(id: IdentifierInput): IdentifierObject {
+    const values: number[] = this.decompute(id)
 
     return {
-      week:     values[0],
-      year:     values[1]
-    };
+      week: values[0],
+      year: values[1],
+    }
   }
 
-  public start(id: IdentifierInput): Day
-  {
-    let obj: IdentifierObject = this.object(id);
-    let start: Day = Day.build( obj.year, 0 ).withWeek( obj.week );
+  public start(id: IdentifierInput): Day {
+    const obj: IdentifierObject = this.object(id)
+    const start: Day = Day.build(obj.year, 0).withWeek(obj.week)
 
-    return start;
+    return start
   }
 
-  public span(id: IdentifierInput, endInclusive: boolean = false): DaySpan
-  {
-    let start: Day = this.start( id );
-    let end: Day = start.endOfWeek( endInclusive );
+  public span(id: IdentifierInput, endInclusive = false): DaySpan {
+    const start: Day = this.start(id)
+    const end: Day = start.endOfWeek(endInclusive)
 
-    return new DaySpan(start, end);
+    return new DaySpan(start, end)
   }
 
-  public describe(id: IdentifierInput, short: boolean = false): string
-  {
-    let start: Day = this.start( id );
-    let format: string = short ? IdentifierWeek.DESCRIBE_FORMAT_SHORT : IdentifierWeek.DESCRIBE_FORMAT_LONG;
+  public describe(id: IdentifierInput, short = false): string {
+    const start: Day = this.start(id)
+    const format: string = short ? IdentifierWeek.DESCRIBE_FORMAT_SHORT : IdentifierWeek.DESCRIBE_FORMAT_LONG
 
-    return start.format( format );
+    return start.format(format)
   }
 
-  public matches(day: Day, id: IdentifierInput): boolean
-  {
-    return day.weekIdentifier === id;
+  public matches(day: Day, id: IdentifierInput): boolean {
+    return day.weekIdentifier === id
     /*
     let obj: IdentifierObject = this.object(id);
 
@@ -496,72 +437,59 @@ class IdentifierWeek extends Identifier
     */
   }
 
+  protected getScales(): number[] {
+    return IdentifierWeek.SCALES
+  }
+
+  protected getLength(): number {
+    return IdentifierWeek.LENGTH
+  }
 }
 
 // YYYYMM (6)
-class IdentifierMonth extends Identifier
-{
+class IdentifierMonth extends Identifier {
+  public static DESCRIBE_FORMAT_LONG = 'MMMM YYYY'
+  public static DESCRIBE_FORMAT_SHORT = 'MMM YYYY'
 
-  public static DESCRIBE_FORMAT_LONG: string = 'MMMM YYYY';
-  public static DESCRIBE_FORMAT_SHORT: string = 'MMM YYYY';
+  private static SCALES: number[] = [1 /* month  */, 100 /* year   */]
+  private static LENGTH = 6
 
-  private static SCALES: number[] = [
-    1           /* month  */,
-    100         /* year   */];
-  private static LENGTH: number = 6;
-
-  protected getScales(): number[]
-  {
-    return IdentifierMonth.SCALES;
+  public get(day: Day): IdentifierInput {
+    return this.compute(day.month + 1, day.year)
   }
 
-  protected getLength(): number
-  {
-    return IdentifierMonth.LENGTH;
-  }
-
-  public get(day: Day): IdentifierInput
-  {
-    return this.compute(day.month + 1, day.year);
-  }
-
-  public object(id: IdentifierInput): IdentifierObject
-  {
-    let values: number[] = this.decompute(id);
+  public object(id: IdentifierInput): IdentifierObject {
+    const values: number[] = this.decompute(id)
 
     return {
-      month:    values[0] - 1,
-      year:     values[1]
-    };
+      month: values[0] - 1,
+      year: values[1],
+    }
   }
 
-  public start(id: IdentifierInput): Day
-  {
-    let obj: IdentifierObject = this.object(id);
-    let start: Day = Day.build( obj.year, obj.month );
+  public start(id: IdentifierInput): Day {
+    const obj: IdentifierObject = this.object(id)
+    const start: Day = Day.build(obj.year, obj.month)
 
-    return start;
+    return start
   }
 
-  public span(id: IdentifierInput, endInclusive: boolean = false): DaySpan
-  {
-    let start: Day = this.start( id );
-    let end: Day = start.endOfMonth( endInclusive );
+  public span(id: IdentifierInput, endInclusive = false): DaySpan {
+    const start: Day = this.start(id)
+    const end: Day = start.endOfMonth(endInclusive)
 
-    return new DaySpan(start, end);
+    return new DaySpan(start, end)
   }
 
-  public describe(id: IdentifierInput, short: boolean = false): string
-  {
-    let start: Day = this.start( id );
-    let format: string = short ? IdentifierMonth.DESCRIBE_FORMAT_SHORT : IdentifierMonth.DESCRIBE_FORMAT_LONG;
+  public describe(id: IdentifierInput, short = false): string {
+    const start: Day = this.start(id)
+    const format: string = short ? IdentifierMonth.DESCRIBE_FORMAT_SHORT : IdentifierMonth.DESCRIBE_FORMAT_LONG
 
-    return start.format( format );
+    return start.format(format)
   }
 
-  public matches(day: Day, id: IdentifierInput): boolean
-  {
-    return day.monthIdentifier === id;
+  public matches(day: Day, id: IdentifierInput): boolean {
+    return day.monthIdentifier === id
     /*
     let obj: IdentifierObject = this.object(id);
 
@@ -572,72 +500,59 @@ class IdentifierMonth extends Identifier
     */
   }
 
+  protected getScales(): number[] {
+    return IdentifierMonth.SCALES
+  }
+
+  protected getLength(): number {
+    return IdentifierMonth.LENGTH
+  }
 }
 
 // YYYYQ (5)
-class IdentifierQuarter extends Identifier
-{
+class IdentifierQuarter extends Identifier {
+  public static DESCRIBE_FORMAT_LONG = 'Qo [quarter] YYYY'
+  public static DESCRIBE_FORMAT_SHORT = 'Qo [quarter] YYYY'
 
-  public static DESCRIBE_FORMAT_LONG: string = 'Qo [quarter] YYYY';
-  public static DESCRIBE_FORMAT_SHORT: string = 'Qo [quarter] YYYY';
+  private static SCALES: number[] = [1 /* quarter  */, 10 /* year   */]
+  private static LENGTH = 5
 
-  private static SCALES: number[] = [
-    1           /* quarter  */,
-    10          /* year   */];
-  private static LENGTH: number = 5;
-
-  protected getScales(): number[]
-  {
-    return IdentifierQuarter.SCALES;
+  public get(day: Day): IdentifierInput {
+    return this.compute(day.quarter, day.year)
   }
 
-  protected getLength(): number
-  {
-    return IdentifierQuarter.LENGTH;
-  }
-
-  public get(day: Day): IdentifierInput
-  {
-    return this.compute(day.quarter, day.year);
-  }
-
-  public object(id: IdentifierInput): IdentifierObject
-  {
-    let values: number[] = this.decompute(id);
+  public object(id: IdentifierInput): IdentifierObject {
+    const values: number[] = this.decompute(id)
 
     return {
-      quarter:  values[0],
-      year:     values[1]
-    };
+      quarter: values[0],
+      year: values[1],
+    }
   }
 
-  public start(id: IdentifierInput): Day
-  {
-    let obj: IdentifierObject = this.object(id);
-    let start: Day = Day.build( obj.year, (obj.quarter - 1) * 3 );
+  public start(id: IdentifierInput): Day {
+    const obj: IdentifierObject = this.object(id)
+    const start: Day = Day.build(obj.year, (obj.quarter - 1) * 3)
 
-    return start;
+    return start
   }
 
-  public span(id: IdentifierInput, endInclusive: boolean = false): DaySpan
-  {
-    let start: Day = this.start( id );
-    let end: Day = start.relativeMonths( 3 ).endOfMonth( endInclusive );
+  public span(id: IdentifierInput, endInclusive = false): DaySpan {
+    const start: Day = this.start(id)
+    const end: Day = start.relativeMonths(3).endOfMonth(endInclusive)
 
-    return new DaySpan(start, end);
+    return new DaySpan(start, end)
   }
 
-  public describe(id: IdentifierInput, short: boolean = false): string
-  {
-    let start: Day = this.start( id );
-    let format: string = short ? IdentifierQuarter.DESCRIBE_FORMAT_SHORT : IdentifierQuarter.DESCRIBE_FORMAT_LONG;
+  public describe(id: IdentifierInput, short = false): string {
+    const start: Day = this.start(id)
+    const format: string = short ? IdentifierQuarter.DESCRIBE_FORMAT_SHORT : IdentifierQuarter.DESCRIBE_FORMAT_LONG
 
-    return start.format( format );
+    return start.format(format)
   }
 
-  public matches(day: Day, id: IdentifierInput): boolean
-  {
-    return day.quarterIdentifier === id;
+  public matches(day: Day, id: IdentifierInput): boolean {
+    return day.quarterIdentifier === id
     /*
     let obj: IdentifierObject = this.object(id);
 
@@ -648,70 +563,58 @@ class IdentifierQuarter extends Identifier
     */
   }
 
+  protected getScales(): number[] {
+    return IdentifierQuarter.SCALES
+  }
+
+  protected getLength(): number {
+    return IdentifierQuarter.LENGTH
+  }
 }
 
 // YYYY (4)
-class IdentifierYear extends Identifier
-{
+class IdentifierYear extends Identifier {
+  public static DESCRIBE_FORMAT_LONG = 'YYYY'
+  public static DESCRIBE_FORMAT_SHORT = 'YYYY'
 
-  public static DESCRIBE_FORMAT_LONG: string = 'YYYY';
-  public static DESCRIBE_FORMAT_SHORT: string = 'YYYY';
+  private static SCALES: number[] = [1 /* year  */]
+  private static LENGTH = 4
 
-  private static SCALES: number[] = [
-    1           /* year  */];
-  private static LENGTH: number = 4;
-
-  protected getScales(): number[]
-  {
-    return IdentifierYear.SCALES;
+  public get(day: Day): IdentifierInput {
+    return this.compute(day.year)
   }
 
-  protected getLength(): number
-  {
-    return IdentifierYear.LENGTH;
-  }
-
-  public get(day: Day): IdentifierInput
-  {
-    return this.compute(day.year);
-  }
-
-  public object(id: IdentifierInput): IdentifierObject
-  {
-    let values: number[] = this.decompute(id);
+  public object(id: IdentifierInput): IdentifierObject {
+    const values: number[] = this.decompute(id)
 
     return {
-      year:     values[0]
-    };
+      year: values[0],
+    }
   }
 
-  public start(id: IdentifierInput): Day
-  {
-    let obj: IdentifierObject = this.object(id);
-    let start: Day = Day.build( obj.year, 0 );
+  public start(id: IdentifierInput): Day {
+    const obj: IdentifierObject = this.object(id)
+    const start: Day = Day.build(obj.year, 0)
 
-    return start;
+    return start
   }
 
-  public span(id: IdentifierInput, endInclusive: boolean = false): DaySpan
-  {
-    let start: Day = this.start( id );
-    let end: Day = start.endOfYear( endInclusive );
+  public span(id: IdentifierInput, endInclusive = false): DaySpan {
+    const start: Day = this.start(id)
+    const end: Day = start.endOfYear(endInclusive)
 
-    return new DaySpan(start, end);
+    return new DaySpan(start, end)
   }
 
-  public describe(id: IdentifierInput, short: boolean = false): string
-  {
-    let start: Day = this.start( id );
-    let format: string = short ? IdentifierYear.DESCRIBE_FORMAT_SHORT : IdentifierYear.DESCRIBE_FORMAT_LONG;
+  public describe(id: IdentifierInput, short = false): string {
+    const start: Day = this.start(id)
+    const format: string = short ? IdentifierYear.DESCRIBE_FORMAT_SHORT : IdentifierYear.DESCRIBE_FORMAT_LONG
 
-    return start.format( format );
+    return start.format(format)
   }
 
-  public matches(day: Day, id: IdentifierInput): boolean
-  {
-    return day.year === id;
+  public matches(day: Day, id: IdentifierInput): boolean {
+    return day.year === id
     /*
     let obj: IdentifierObject = this.object(id);
 
@@ -721,12 +624,19 @@ class IdentifierYear extends Identifier
     */
   }
 
+  protected getScales(): number[] {
+    return IdentifierYear.SCALES
+  }
+
+  protected getLength(): number {
+    return IdentifierYear.LENGTH
+  }
 }
 
 // Sets the Identifier types
-Identifier.Time = new IdentifierTime();
-Identifier.Day = new IdentifierDay();
-Identifier.Week = new IdentifierWeek();
-Identifier.Month = new IdentifierMonth();
-Identifier.Quarter = new IdentifierQuarter();
-Identifier.Year = new IdentifierYear();
+Identifier.Time = new IdentifierTime()
+Identifier.Day = new IdentifierDay()
+Identifier.Week = new IdentifierWeek()
+Identifier.Month = new IdentifierMonth()
+Identifier.Quarter = new IdentifierQuarter()
+Identifier.Year = new IdentifierYear()

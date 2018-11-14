@@ -1,20 +1,16 @@
-
-import { Functions as fn } from './Functions';
-import { FrequencyCheck } from './Frequency';
-import { Schedule, ScheduleInput } from './Schedule';
-import { ScheduleModifier } from './ScheduleModifier';
-import { Constants } from './Constants';
-import { Day, DayProperty, DayInput, DurationInput } from './Day';
-import { Event } from './Event';
-import { Time } from './Time';
-
+import { Constants } from './Constants'
+import { Day, DayInput, DayProperty, DurationInput } from './Day'
+import { Event } from './Event'
+import { FrequencyCheck } from './Frequency'
+import { Functions as fn } from './Functions'
+import { Schedule, ScheduleInput } from './Schedule'
+import { ScheduleModifier } from './ScheduleModifier'
+import { Time } from './Time'
 
 /**
  * The class which takes user input and parses it to specific structures.
  */
-export class Parse
-{
-
+export class Parse {
   /**
    * Parses a value and converts it to a [[FrequencyCheck]].
    *
@@ -23,43 +19,40 @@ export class Parse
    * @returns A function which determines whether a value matches a frequency.
    * @see [[Schedule]]
    */
-  public static frequency(input: any, property: DayProperty): FrequencyCheck
-  {
+  public static frequency(input: any, property: DayProperty): FrequencyCheck {
     let check: FrequencyCheck = (value: number) => {
-      return true;
-    };
-
-    check.given = false;
-
-    if (fn.isFrequencyValueEvery(input))
-    {
-      let every: number = input.every;
-      let offset: number = (input.offset || 0) % every;
-
-      check = (value: number) => {
-        return value % every === offset;
-      };
-      check.given = true;
+      return true
     }
 
-    if (fn.isFrequencyValueOneOf(input))
-    {
-      let map: object = {};
+    check.given = false
 
-      for (let i = 0; i < input.length; i++) {
-        map[ input[ i ] ] = true;
+    if (fn.isFrequencyValueEvery(input)) {
+      const every: number = input.every
+      const offset: number = (input.offset || 0) % every
+
+      check = (value: number) => {
+        return value % every === offset
+      }
+      check.given = true
+    }
+
+    if (fn.isFrequencyValueOneOf(input)) {
+      const map: object = {}
+
+      for (const inp of input) {
+        map[inp] = true
       }
 
       check = (value: number) => {
-        return !!map[ value ];
-      };
-      check.given = true;
+        return !!map[value]
+      }
+      check.given = true
     }
 
-    check.input = fn.coalesce( input, null );
-    check.property = property;
+    check.input = fn.coalesce(input, null)
+    check.property = property
 
-    return check;
+    return check
   }
 
   /**
@@ -77,34 +70,22 @@ export class Parse
    * @param input The input to parse.
    * @returns The Day parsed or `null` if the value is not valid.
    */
-  public static day(input: DayInput): Day
-  {
-    if (fn.isNumber(input))
-    {
-      return Day.unix( <number>input );
-    }
-    else if (fn.isString(input))
-    {
-      return Day.fromString( <string>input );
-    }
-    else if (input instanceof Day)
-    {
-      return input;
-    }
-    else if (fn.isArray( input ))
-    {
-      return Day.fromArray( <number[]>input );
-    }
-    else if (fn.isObject( input ))
-    {
-      return Day.fromObject( <object>input );
-    }
-    else if (input === true)
-    {
-      return Day.today();
+  public static day(input: DayInput): Day {
+    if (fn.isNumber(input)) {
+      return Day.unix(input as number)
+    } else if (fn.isString(input)) {
+      return Day.fromString(input as string)
+    } else if (input instanceof Day) {
+      return input
+    } else if (fn.isArray(input)) {
+      return Day.fromArray(input as number[])
+    } else if (fn.isObject(input)) {
+      return Day.fromObject(input as object)
+    } else if (input === true) {
+      return Day.today()
     }
 
-    return null;
+    return null
   }
 
   /**
@@ -126,26 +107,21 @@ export class Parse
    * @see [[Time.fromIdentifier]]
    * @see [[Time.fromString]]
    */
-  public static time(input: any): Time
-  {
-    if (input instanceof Time)
-    {
-      return input;
+  public static time(input: any): Time {
+    if (input instanceof Time) {
+      return input
     }
-    if (fn.isNumber(input))
-    {
-      return Time.fromIdentifier( <number>input );
+    if (fn.isNumber(input)) {
+      return Time.fromIdentifier(input as number)
     }
-    if (fn.isString(input))
-    {
-      return Time.fromString( <string>input );
+    if (fn.isString(input)) {
+      return Time.fromString(input as string)
     }
-    if (fn.isObject(input) && fn.isNumber(input.hour))
-    {
-      return new Time(input.hour, input.minute, input.second, input.millisecond);
+    if (fn.isObject(input) && fn.isNumber(input.hour)) {
+      return new Time(input.hour, input.minute, input.second, input.millisecond)
     }
 
-    return null;
+    return null
   }
 
   /**
@@ -157,30 +133,25 @@ export class Parse
    * @returns A non-null array of time instances.
    * @see [[Parse.time]]
    */
-  public static times(input: any): Time[]
-  {
-    let times: Time[] = [];
+  public static times(input: any): Time[] {
+    const times: Time[] = []
 
-    if (fn.isArray(input))
-    {
-      for (let timeInput of input)
-      {
-        let time = this.time( timeInput );
+    if (fn.isArray(input)) {
+      for (const timeInput of input) {
+        const time = this.time(timeInput)
 
-        if (time)
-        {
-          times.push( time );
+        if (time) {
+          times.push(time)
         }
       }
 
       // Sort times from earliest to latest.
-      times.sort((a, b) =>
-      {
-        return a.toMilliseconds() - b.toMilliseconds();
-      });
+      times.sort((a, b) => {
+        return a.toMilliseconds() - b.toMilliseconds()
+      })
     }
 
-    return times;
+    return times
   }
 
   /**
@@ -199,42 +170,35 @@ export class Parse
    * @returns The object with identifier keys and `true` values.
    * @see [[Day.dayIdentifier]]
    */
-  public static modifier<T>(input: any, value: T,
-    parseMeta: (input: any) => T = (x => <T>x),
-    out: ScheduleModifier<T> = new ScheduleModifier<T>()): ScheduleModifier<T>
-  {
-    let map = {};
+  public static modifier<T>(
+    input: any,
+    value: T,
+    parseMeta: (input: any) => T = x => x as T,
+    out: ScheduleModifier<T> = new ScheduleModifier<T>()
+  ): ScheduleModifier<T> {
+    const map = {}
 
-    if (fn.isArray(input))
-    {
-      for (let identifier of input)
-      {
-        if (identifier instanceof Day)
-        {
-          map[ identifier.dayIdentifier ] = value;
-        }
-        else if (fn.isNumber(identifier))
-        {
-          map[ <number>identifier ] = value;
-        }
-        else if (fn.isString(identifier))
-        {
-          map[ <string>identifier ] = value;
+    if (fn.isArray(input)) {
+      for (const identifier of input) {
+        if (identifier instanceof Day) {
+          map[identifier.dayIdentifier] = value
+        } else if (fn.isNumber(identifier)) {
+          map[identifier as number] = value
+        } else if (fn.isString(identifier)) {
+          map[identifier as string] = value
         }
       }
     }
 
-    if (fn.isObject(input))
-    {
-      for (let identifier in input)
-      {
-        map[ identifier ] = parseMeta( input[ identifier ] );
+    if (fn.isObject(input)) {
+      for (const identifier of input) {
+        map[identifier] = parseMeta(input[identifier])
       }
     }
 
-    out.map = map;
+    out.map = map
 
-    return out;
+    return out
   }
 
   /**
@@ -246,58 +210,57 @@ export class Parse
    * @param out The schedule to set the values of and return.
    * @returns An instance of the parsed [[Schedule]].
    */
-  public static schedule<M>(input: ScheduleInput<M> | Schedule<M>,
-    parseMeta: (input: any) => M = (x => <M>x),
-    out: Schedule<M> = new Schedule<M>()): Schedule<M>
-  {
-    if (input instanceof Schedule)
-    {
-      return input;
+  public static schedule<M>(
+    input: ScheduleInput<M> | Schedule<M>,
+    parseMeta: (input: any) => M = x => x as M,
+    out: Schedule<M> = new Schedule<M>()
+  ): Schedule<M> {
+    if (input instanceof Schedule) {
+      return input
     }
 
-    let on: Day = this.day( input.on );
-    let times: Time[] = this.times( input.times );
-    let fullDay: boolean = times.length === 0;
+    const on: Day = this.day(input.on)
+    const times: Time[] = this.times(input.times)
+    const fullDay: boolean = times.length === 0
 
-    if (on)
-    {
-      input.start = on.start();
-      input.end = on.end();
-      input.year = [on.year];
-      input.month = [on.month];
-      input.dayOfMonth = [on.dayOfMonth];
+    if (on) {
+      input.start = on.start()
+      input.end = on.end()
+      input.year = [on.year]
+      input.month = [on.month]
+      input.dayOfMonth = [on.dayOfMonth]
     }
 
-    out.times = times;
-    out.duration = fn.coalesce( input.duration, Constants.DURATION_DEFAULT );
-    out.durationUnit = <DurationInput>fn.coalesce( input.durationUnit, Constants.DURATION_DEFAULT_UNIT( fullDay ) );
-    out.start = this.day( input.start );
-    out.end = this.day( input.end );
-    out.exclude = this.modifier( input.exclude, true, undefined, out.exclude );
-    out.include = this.modifier( input.include, true, undefined, out.include );
-    out.cancel = this.modifier( input.cancel, true, undefined, out.cancel );
-    out.meta = this.modifier( input.meta, null, parseMeta, out.meta );
-    out.year = this.frequency( input.year, 'year' );
-    out.month = this.frequency( input.month, 'month' );
-    out.week = this.frequency( input.week, 'week' );
-    out.weekOfYear = this.frequency( input.weekOfYear, 'weekOfYear' );
-    out.weekspanOfYear = this.frequency( input.weekspanOfYear, 'weekspanOfYear' );
-    out.fullWeekOfYear = this.frequency( input.fullWeekOfYear, 'fullWeekOfYear' );
-    out.lastWeekspanOfYear = this.frequency( input.lastWeekspanOfYear, 'lastWeekspanOfYear' );
-    out.lastFullWeekOfYear = this.frequency( input.lastFullWeekOfYear, 'lastFullWeekOfYear' );
-    out.weekOfMonth = this.frequency( input.weekOfMonth, 'weekOfMonth' );
-    out.weekspanOfMonth = this.frequency( input.weekspanOfMonth, 'weekspanOfMonth' );
-    out.fullWeekOfMonth = this.frequency( input.fullWeekOfMonth, 'fullWeekOfMonth' );
-    out.lastWeekspanOfMonth = this.frequency( input.lastWeekspanOfMonth, 'lastWeekspanOfMonth' );
-    out.lastFullWeekOfMonth = this.frequency( input.lastFullWeekOfMonth, 'lastFullWeekOfMonth' );
-    out.dayOfWeek = this.frequency( input.dayOfWeek, 'dayOfWeek' );
-    out.dayOfMonth = this.frequency( input.dayOfMonth, 'dayOfMonth' );
-    out.lastDayOfMonth = this.frequency( input.lastDayOfMonth, 'lastDayOfMonth' );
-    out.dayOfYear = this.frequency( input.dayOfYear, 'dayOfYear' );
-    out.updateDurationInDays();
-    out.updateChecks();
+    out.times = times
+    out.duration = fn.coalesce(input.duration, Constants.DURATION_DEFAULT)
+    out.durationUnit = fn.coalesce(input.durationUnit, Constants.DURATION_DEFAULT_UNIT(fullDay)) as DurationInput
+    out.start = this.day(input.start)
+    out.end = this.day(input.end)
+    out.exclude = this.modifier(input.exclude, true, undefined, out.exclude)
+    out.include = this.modifier(input.include, true, undefined, out.include)
+    out.cancel = this.modifier(input.cancel, true, undefined, out.cancel)
+    out.meta = this.modifier(input.meta, null, parseMeta, out.meta)
+    out.year = this.frequency(input.year, 'year')
+    out.month = this.frequency(input.month, 'month')
+    out.week = this.frequency(input.week, 'week')
+    out.weekOfYear = this.frequency(input.weekOfYear, 'weekOfYear')
+    out.weekspanOfYear = this.frequency(input.weekspanOfYear, 'weekspanOfYear')
+    out.fullWeekOfYear = this.frequency(input.fullWeekOfYear, 'fullWeekOfYear')
+    out.lastWeekspanOfYear = this.frequency(input.lastWeekspanOfYear, 'lastWeekspanOfYear')
+    out.lastFullWeekOfYear = this.frequency(input.lastFullWeekOfYear, 'lastFullWeekOfYear')
+    out.weekOfMonth = this.frequency(input.weekOfMonth, 'weekOfMonth')
+    out.weekspanOfMonth = this.frequency(input.weekspanOfMonth, 'weekspanOfMonth')
+    out.fullWeekOfMonth = this.frequency(input.fullWeekOfMonth, 'fullWeekOfMonth')
+    out.lastWeekspanOfMonth = this.frequency(input.lastWeekspanOfMonth, 'lastWeekspanOfMonth')
+    out.lastFullWeekOfMonth = this.frequency(input.lastFullWeekOfMonth, 'lastFullWeekOfMonth')
+    out.dayOfWeek = this.frequency(input.dayOfWeek, 'dayOfWeek')
+    out.dayOfMonth = this.frequency(input.dayOfMonth, 'dayOfMonth')
+    out.lastDayOfMonth = this.frequency(input.lastDayOfMonth, 'lastDayOfMonth')
+    out.dayOfYear = this.frequency(input.dayOfYear, 'dayOfYear')
+    out.updateDurationInDays()
+    out.updateChecks()
 
-    return out;
+    return out
   }
 
   /**
@@ -307,19 +270,16 @@ export class Parse
    * @param checks The array of check functions to filter through.
    * @returns The array of user specified checks.
    */
-  public static givenFrequency(checks: FrequencyCheck[]): FrequencyCheck[]
-  {
-    let out: FrequencyCheck[] = [];
+  public static givenFrequency(checks: FrequencyCheck[]): FrequencyCheck[] {
+    const out: FrequencyCheck[] = []
 
-    for (let check of checks)
-    {
-      if (check.given)
-      {
-        out.push( check );
+    for (const check of checks) {
+      if (check.given) {
+        out.push(check)
       }
     }
 
-    return out;
+    return out
   }
 
   /**
@@ -330,31 +290,28 @@ export class Parse
    * @param parseMeta A function to use when parsing meta input into the desired type.
    * @returns The parsed value.
    */
-  public static event<T, M>(input: any,
-    parseData: (input: any) => T = (x => <T>x),
-    parseMeta: (input: any) => M = (x => <M>x)): Event<T, M>
-  {
-    if (input instanceof Event)
-    {
-      return input;
+  public static event<T, M>(
+    input: any,
+    parseData: (input: any) => T = x => x as T,
+    parseMeta: (input: any) => M = x => x as M
+  ): Event<T, M> {
+    if (input instanceof Event) {
+      return input
     }
 
-    if (!input.schedule)
-    {
-      return null;
+    if (!input.schedule) {
+      return null
     }
 
-    let schedule: Schedule<M> = this.schedule<M>( input.schedule, parseMeta );
+    const schedule: Schedule<M> = this.schedule<M>(input.schedule, parseMeta)
 
-    return new Event( schedule, parseData( input.data ), input.id, input.visible );
+    return new Event(schedule, parseData(input.data), input.id, input.visible)
   }
 
   /**
    * Parses a schedule from a CRON pattern. TODO
    */
-  public static cron<M>(pattern: string, out: Schedule<M> = new Schedule<M>()): Schedule<M>
-  {
-    return out;
+  public static cron<M>(pattern: string, out: Schedule<M> = new Schedule<M>()): Schedule<M> {
+    return out
   }
-
 }

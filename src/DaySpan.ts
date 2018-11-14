@@ -1,67 +1,76 @@
-
-import { Day } from './Day';
-import { Op } from './Operation';
-import { Units } from './Units';
-import { Constants } from './Constants';
-
-
+import { Constants } from './Constants'
+import { Day } from './Day'
+import { Op } from './Operation'
+import { Units } from './Units'
 
 /**
  * The calculated bounds of a DaySpan relative to a given day.
  */
-export interface DaySpanBounds
-{
-
+export interface DaySpanBounds {
   /**
    * The top of the span within the rectangle of the given day.
    */
-  top: number;
+  top: number
 
   /**
    * The bottom of the span within the rectangle of the givne day.
    */
-  bottom: number;
+  bottom: number
 
   /**
    * The height of the span within the rectangle of the given day. This is
    * equivalent by `bottom - top`.
    */
-  height: number;
+  height: number
 
   /**
    * The left of the span within the rectangle of the given day.
    */
-  left: number;
+  left: number
 
   /**
    * The right of the span within the rectangle of the given day.
    */
-  right: number;
+  right: number
 
   /**
    * The width of the span within the rectangle of the given day. This is
    * equivalent by `right - left`.
    */
-  width: number;
+  width: number
 }
 
 /**
  * A class for a range of time between two [[Day]] timestamps.
  */
-export class DaySpan
-{
-
+export class DaySpan {
+  /**
+   * Formatting functions which assist the [[DaySpan.summary]] function.
+   */
+  public static SUMMARY_FORMATS = {
+    [Units.DAY]: (short: boolean, dayOfWeek: boolean, year: boolean) => {
+      return (dayOfWeek ? (short ? 'ddd, ' : 'dddd, ') : '') + (short ? 'MMM ' : 'MMMM ') + 'Do' + (year ? ' YYYY' : '')
+    },
+    [Units.WEEK]: (short: boolean, dayOfWeek: boolean, year: boolean) => {
+      return (dayOfWeek ? (short ? 'ddd, ' : 'dddd, ') : '') + (short ? 'MMM ' : 'MMMM ') + 'Do' + (year ? ' YYYY' : '')
+    },
+    [Units.MONTH]: (short: boolean, dayOfWeek: boolean, year: boolean) => {
+      return (short ? 'MMM' : 'MMMM') + (year ? ' YYYY' : '')
+    },
+    [Units.YEAR]: (short: boolean, dayOfWeek: boolean, year: boolean) => {
+      return year ? 'YYYY' : ''
+    },
+  }
 
   /**
    * The starting timestamp of the span (inclusive).
    */
-  public start: Day;
+  public start: Day
 
   /**
    * The endind timestamp of the span (inclusive).
    */
-  public end: Day;
-
+  public end: Day
 
   /**
    * Creates a new span of time.
@@ -69,18 +78,27 @@ export class DaySpan
    * @param start The starting timestamp.
    * @param end The ending timestamp.
    */
-  public constructor(start: Day, end: Day)
-  {
-    this.start = start;
-    this.end = end;
+  public constructor(start: Day, end: Day) {
+    this.start = start
+    this.end = end
+  }
+
+  /**
+   * Returns a point [[DaySpan]] with the same start and end timestamp.
+   *
+   * @param day The timestamp which will be the start and end.
+   * @returns The new instance.
+   * @see [[DaySpan.isPoint]]
+   */
+  public static point(day: Day): DaySpan {
+    return new DaySpan(day, day)
   }
 
   /**
    * Whether this span starts and ends on the same timestamp.
    */
-  public get isPoint(): boolean
-  {
-    return this.start.time === this.end.time;
+  public get isPoint(): boolean {
+    return this.start.time === this.end.time
   }
 
   /**
@@ -90,9 +108,8 @@ export class DaySpan
    * @param day The timestamp to test.
    * @returns True if the day is >= the start and <= the end of this span.
    */
-  public contains(day: Day): boolean
-  {
-    return day.time >= this.start.time && day.time <= this.end.time;
+  public contains(day: Day): boolean {
+    return day.time >= this.start.time && day.time <= this.end.time
   }
 
   /**
@@ -104,9 +121,8 @@ export class DaySpan
    * @returns `-1`, `0`, or `1` depending on the given timestamp relative to
    *    this span.
    */
-  public compareTo(day: Day): number
-  {
-    return day.time < this.start.time ? -1 : (day.time > this.end.time ? 1 : 0);
+  public compareTo(day: Day): number {
+    return day.time < this.start.time ? -1 : day.time > this.end.time ? 1 : 0
   }
 
   /**
@@ -116,9 +132,8 @@ export class DaySpan
    * @param day The timestamp to test.
    * @see [[Day.sameDay]]
    */
-  public matchesDay(day: Day): boolean
-  {
-    return this.contains( day ) || day.sameDay( this.start ) || day.sameDay( this.end );
+  public matchesDay(day: Day): boolean {
+    return this.contains(day) || day.sameDay(this.start) || day.sameDay(this.end)
   }
 
   /**
@@ -128,9 +143,8 @@ export class DaySpan
    * @param day The timestamp to test.
    * @see [[Day.sameWeek]]
    */
-  public matchesWeek(day: Day): boolean
-  {
-    return this.contains( day ) || day.sameWeek( this.start ) || day.sameWeek( this.end );
+  public matchesWeek(day: Day): boolean {
+    return this.contains(day) || day.sameWeek(this.start) || day.sameWeek(this.end)
   }
 
   /**
@@ -140,9 +154,8 @@ export class DaySpan
    * @param day The timestamp to test.
    * @see [[Day.sameMonth]]
    */
-  public matchesMonth(day: Day): boolean
-  {
-    return this.contains( day ) || day.sameMonth( this.start ) || day.sameMonth( this.end );
+  public matchesMonth(day: Day): boolean {
+    return this.contains(day) || day.sameMonth(this.start) || day.sameMonth(this.end)
   }
 
   /**
@@ -152,11 +165,9 @@ export class DaySpan
    * @param day The timestamp to test.
    * @see [[Day.sameYear]]
    */
-  public matchesYear(day: Day): boolean
-  {
-    return this.contains( day ) || day.sameYear( this.start ) || day.sameYear( this.end );
+  public matchesYear(day: Day): boolean {
+    return this.contains(day) || day.sameYear(this.start) || day.sameYear(this.end)
   }
-
 
   /**
    * Calculates the number of milliseconds between the start and end timestamp.
@@ -166,9 +177,8 @@ export class DaySpan
    * @returns The time between the start and end timestamp.
    * @see [[Day.millisBetween]]
    */
-  public millis(op: Op = Op.DOWN, absolute: boolean = true): number
-  {
-    return this.start.millisBetween(this.end, op, absolute);
+  public millis(op: Op = Op.DOWN, absolute = true): number {
+    return this.start.millisBetween(this.end, op, absolute)
   }
 
   /**
@@ -179,9 +189,8 @@ export class DaySpan
    * @returns The time between the start and end timestamp.
    * @see [[Day.secondsBetween]]
    */
-  public seconds(op: Op = Op.DOWN, absolute: boolean = true): number
-  {
-    return this.start.secondsBetween(this.end, op, absolute);
+  public seconds(op: Op = Op.DOWN, absolute = true): number {
+    return this.start.secondsBetween(this.end, op, absolute)
   }
 
   /**
@@ -192,9 +201,8 @@ export class DaySpan
    * @returns The time between the start and end timestamp.
    * @see [[Day.minutesBetween]]
    */
-  public minutes(op: Op = Op.DOWN, absolute: boolean = true): number
-  {
-    return this.start.minutesBetween(this.end, op, absolute);
+  public minutes(op: Op = Op.DOWN, absolute = true): number {
+    return this.start.minutesBetween(this.end, op, absolute)
   }
 
   /**
@@ -205,9 +213,8 @@ export class DaySpan
    * @returns The time between the start and end timestamp.
    * @see [[Day.hoursBetween]]
    */
-  public hours(op: Op = Op.DOWN, absolute: boolean = true): number
-  {
-    return this.start.hoursBetween(this.end, op, absolute);
+  public hours(op: Op = Op.DOWN, absolute = true): number {
+    return this.start.hoursBetween(this.end, op, absolute)
   }
 
   /**
@@ -218,9 +225,8 @@ export class DaySpan
    * @returns The time between the start and end timestamp.
    * @see [[Day.daysBetween]]
    */
-  public days(op: Op = Op.DOWN, absolute: boolean = true): number
-  {
-    return this.start.daysBetween(this.end, op, absolute);
+  public days(op: Op = Op.DOWN, absolute = true): number {
+    return this.start.daysBetween(this.end, op, absolute)
   }
 
   /**
@@ -231,9 +237,8 @@ export class DaySpan
    * @returns The time between the start and end timestamp.
    * @see [[Day.weeksBetween]]
    */
-  public weeks(op: Op = Op.DOWN, absolute: boolean = true): number
-  {
-    return this.start.weeksBetween(this.end, op, absolute);
+  public weeks(op: Op = Op.DOWN, absolute = true): number {
+    return this.start.weeksBetween(this.end, op, absolute)
   }
 
   /**
@@ -244,9 +249,8 @@ export class DaySpan
    * @returns The time between the start and end timestamp.
    * @see [[Day.monthsBetween]]
    */
-  public months(op: Op = Op.DOWN, absolute: boolean = true): number
-  {
-    return this.start.monthsBetween(this.end, op, absolute);
+  public months(op: Op = Op.DOWN, absolute = true): number {
+    return this.start.monthsBetween(this.end, op, absolute)
   }
 
   /**
@@ -257,9 +261,8 @@ export class DaySpan
    * @returns The time between the start and end timestamp.
    * @see [[Day.yearsBetween]]
    */
-  public years(op: Op = Op.DOWN, absolute: boolean = true): number
-  {
-    return this.start.yearsBetween(this.end, op, absolute);
+  public years(op: Op = Op.DOWN, absolute = true): number {
+    return this.start.yearsBetween(this.end, op, absolute)
   }
 
   /**
@@ -272,9 +275,8 @@ export class DaySpan
    *    24-hour period starting at the given timestamp, otherwise the value
    *    returned may be less than 0 or greater than 1.
    */
-  public startDelta(relativeTo: Day): number
-  {
-    return (this.start.time - relativeTo.time) / Constants.MILLIS_IN_DAY;
+  public startDelta(relativeTo: Day): number {
+    return (this.start.time - relativeTo.time) / Constants.MILLIS_IN_DAY
   }
 
   /**
@@ -287,9 +289,8 @@ export class DaySpan
    *    24-hour period starting at the given timestamp, otherwise the value
    *    returned may be less than 0 or greater than 1.
    */
-  public endDelta(relativeTo: Day): number
-  {
-    return (this.end.time - relativeTo.time) / Constants.MILLIS_IN_DAY;
+  public endDelta(relativeTo: Day): number {
+    return (this.end.time - relativeTo.time) / Constants.MILLIS_IN_DAY
   }
 
   /**
@@ -312,19 +313,26 @@ export class DaySpan
    * @param offsetY How much to translate the top & bottom properties by.
    * @returns The calculated bounds for this span.
    */
-  public getBounds(relativeTo: Day, dayHeight: number = 1, dayWidth: number = 1, columnOffset: number = 0, clip: boolean = true, offsetX: number = 0, offsetY: number = 0): DaySpanBounds
-  {
-    let startRaw: number = this.startDelta( relativeTo );
-    let endRaw: number = this.endDelta( relativeTo );
+  public getBounds(
+    relativeTo: Day,
+    dayHeight = 1,
+    dayWidth = 1,
+    columnOffset = 0,
+    clip = true,
+    offsetX = 0,
+    offsetY = 0
+  ): DaySpanBounds {
+    const startRaw: number = this.startDelta(relativeTo)
+    const endRaw: number = this.endDelta(relativeTo)
 
-    let start: number = clip ? Math.max(0, startRaw) : startRaw;
-    let end: number = clip ? Math.min(1, endRaw) : endRaw;
+    const start: number = clip ? Math.max(0, startRaw) : startRaw
+    const end: number = clip ? Math.min(1, endRaw) : endRaw
 
-    let left: number = columnOffset;
-    let right: number = dayWidth - left;
+    const left: number = columnOffset
+    const right: number = dayWidth - left
 
-    let top: number = start * dayHeight;
-    let bottom: number = end * dayHeight;
+    const top: number = start * dayHeight
+    const bottom: number = end * dayHeight
 
     return {
       top: top + offsetY,
@@ -332,8 +340,8 @@ export class DaySpan
       height: bottom - top,
       left: left + offsetX,
       right: right + offsetX,
-      width: right
-    };
+      width: right,
+    }
   }
 
   /**
@@ -351,32 +359,34 @@ export class DaySpan
    * @param delimiter The string to separate the start and end timestamps with.
    * @returns The summary of this span.
    */
-  public summary(type: Units, dayOfWeek: boolean = true, short: boolean = false, repeat: boolean = false, contextual: boolean = true, delimiter: string = ' - '): string
-  {
-    let formats = DaySpan.SUMMARY_FORMATS[ type ];
-    let today: Day = Day.today();
-    let showStartYear: boolean = !contextual || !this.start.sameYear( today );
-    let showEndYear: boolean = !contextual || !this.end.sameYear( today );
-    let start: string = this.start.format( formats(short, dayOfWeek, showStartYear) );
-    let end: string = this.end.format( formats(short, dayOfWeek, showEndYear) );
-    let summary: string = start;
+  public summary(
+    type: Units,
+    dayOfWeek = true,
+    short = false,
+    repeat = false,
+    contextual = true,
+    delimiter = ' - '
+  ): string {
+    const formats = DaySpan.SUMMARY_FORMATS[type]
+    const today: Day = Day.today()
+    const showStartYear: boolean = !contextual || !this.start.sameYear(today)
+    const showEndYear: boolean = !contextual || !this.end.sameYear(today)
+    const start: string = this.start.format(formats(short, dayOfWeek, showStartYear))
+    const end: string = this.end.format(formats(short, dayOfWeek, showEndYear))
+    let summary: string = start
 
-    if (start !== end)
-    {
-      if (!repeat)
-      {
-        summary = this.start.format( formats(short, dayOfWeek, !this.start.sameYear(this.end)) );
+    if (start !== end) {
+      if (!repeat) {
+        summary = this.start.format(formats(short, dayOfWeek, !this.start.sameYear(this.end)))
       }
 
-      summary += delimiter;
-      summary += end;
-    }
-    else
-    {
-      summary = start;
+      summary += delimiter
+      summary += end
+    } else {
+      summary = start
     }
 
-    return summary;
+    return summary
   }
 
   /**
@@ -385,12 +395,8 @@ export class DaySpan
    * @param span The span to test.
    * @returns `true` if the spans intersect, otherwise `false`.
    */
-  public intersects(span: DaySpan): boolean
-  {
-    return !(
-      this.end.time < span.start.time ||
-      this.start.time > span.end.time
-    );
+  public intersects(span: DaySpan): boolean {
+    return !(this.end.time < span.start.time || this.start.time > span.end.time)
   }
 
   /**
@@ -400,12 +406,11 @@ export class DaySpan
    * @param span The span to calculate the intersection with.
    * @returns The intersection or `null` if none exists.
    */
-  public intersection(span: DaySpan): DaySpan
-  {
-    let start: Day = this.start.max( span.start );
-    let end: Day = this.end.min( span.end );
+  public intersection(span: DaySpan): DaySpan {
+    const start: Day = this.start.max(span.start)
+    const end: Day = this.end.min(span.end)
 
-    return start.isAfter( end ) ? null : new DaySpan(start, end);
+    return start.isAfter(end) ? null : new DaySpan(start, end)
   }
 
   /**
@@ -414,44 +419,10 @@ export class DaySpan
    * @param span The span to calculate the union with.
    * @returns The union of the two spans.
    */
-  public union(span: DaySpan): DaySpan
-  {
-    let start: Day = this.start.min( span.start );
-    let end: Day = this.end.max( span.end );
+  public union(span: DaySpan): DaySpan {
+    const start: Day = this.start.min(span.start)
+    const end: Day = this.end.max(span.end)
 
-    return new DaySpan(start, end);
+    return new DaySpan(start, end)
   }
-
-  /**
-   * Returns a point [[DaySpan]] with the same start and end timestamp.
-   *
-   * @param day The timestamp which will be the start and end.
-   * @returns The new instance.
-   * @see [[DaySpan.isPoint]]
-   */
-  public static point(day: Day): DaySpan
-  {
-    return new DaySpan( day, day );
-  }
-
-
-  /**
-   * Formatting functions which assist the [[DaySpan.summary]] function.
-   */
-  public static SUMMARY_FORMATS =
-  {
-    [Units.DAY]: (short: boolean, dayOfWeek: boolean, year: boolean) => {
-      return (dayOfWeek ? (short ? 'ddd, ' : 'dddd, ') : '') + (short ? 'MMM ' : 'MMMM ') + 'Do' + (year ? ' YYYY' : '');
-    },
-    [Units.WEEK]: (short: boolean, dayOfWeek: boolean, year: boolean) => {
-      return (dayOfWeek ? (short ? 'ddd, ' : 'dddd, ') : '') + (short ? 'MMM ' : 'MMMM ') + 'Do' + (year ? ' YYYY' : '');
-    },
-    [Units.MONTH]: (short: boolean, dayOfWeek: boolean, year: boolean) => {
-      return (short ? 'MMM' : 'MMMM') + (year ? ' YYYY' : '');
-    },
-    [Units.YEAR]: (short: boolean, dayOfWeek: boolean, year: boolean) => {
-      return (year ? 'YYYY' : '');
-    }
-  };
-
 }
